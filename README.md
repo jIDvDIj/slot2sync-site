@@ -35,4 +35,4 @@ combina os artefatos (`docs/site` dentro de `landing/dist/docs`) e publica no Gi
 
 ## Licença
 
-GPL-3.0-or-later — mesma licença do [RetroSync](https://github.com/jIDvDIj/retro-sync).
+GPL-3.0-or-later
