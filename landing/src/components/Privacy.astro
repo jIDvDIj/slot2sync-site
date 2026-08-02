@@ -1,0 +1,36 @@
+<section class="privacy">
+  <div class="container card">
+    <p class="eyebrow">Seus dados e sua privacidade</p>
+    <h2>Acesso mínimo, por padrão</h2>
+    <ul>
+      <li>
+        O RetroSync usa o acesso mínimo ao Google Drive: ele <strong
+          >só enxerga os arquivos que ele próprio cria</strong
+        >. O resto do seu Drive permanece invisível para o app.
+      </li>
+      <li>
+        Tudo que ele guarda no Drive fica organizado numa pasta dedicada: <code>RetroSync</code>,
+        com uma subpasta para cada emulador.
+      </li>
+      <li>O token de acesso fica no cofre de credenciais do seu sistema operacional — nunca em texto plano.</li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .privacy ul {
+    color: var(--text-muted);
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  .privacy li + li {
+    margin-top: 10px;
+  }
+
+  code {
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+</style>

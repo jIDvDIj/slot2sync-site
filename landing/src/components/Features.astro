@@ -1,0 +1,52 @@
+---
+const features = [
+  {
+    title: 'Sincroniza sozinho, na hora certa',
+    text: 'Ao abrir o emulador, baixa os saves mais recentes antes do jogo começar. Ao fechar, envia o progresso novo para o Drive.',
+  },
+  {
+    title: 'Nunca apaga nada',
+    text: 'Só adiciona e atualiza — seus arquivos no Drive estão seguros. Conflito entre duas máquinas vira decisão sua, nunca sobrescrita silenciosa.',
+  },
+  {
+    title: 'Funciona offline',
+    text: 'Sem internet ou com o jogo aberto na hora errada? Vira uma pendência resolvida assim que der, sem erro e sem travar.',
+  },
+  {
+    title: 'Você escolhe o que sincronizar',
+    text: 'Ligue ou desligue saves, savestates e configurações por emulador, e escolha quais momentos disparam a sincronização automática.',
+  },
+  {
+    title: 'Avisa sem incomodar',
+    text: 'Notificações nativas mostram o que foi sincronizado ou o que deu errado — ajustáveis para todas, só erros, ou nenhuma.',
+  },
+  {
+    title: 'Combina com várias máquinas',
+    text: 'Cada computador ganha um nome, então você sempre sabe de onde veio cada save.',
+  },
+];
+---
+
+<section class="features">
+  <div class="container">
+    <p class="eyebrow">O que ele faz por você</p>
+    <h2>Sincronização de verdade, sem trabalho manual</h2>
+    <div class="grid grid-3">
+      {
+        features.map((f) => (
+          <div class="card">
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .features .card p {
+    color: var(--text-muted);
+    margin: 0;
+  }
+</style>

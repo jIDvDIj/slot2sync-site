@@ -1,0 +1,16 @@
+# Landing (Astro/Node)
+landing/node_modules/
+landing/dist/
+landing/.astro/
+
+# Docs (MkDocs/Python)
+docs/.venv/
+docs/site/
+docs/__pycache__/
+
+# Build combinado publicado no Pages
+_site/
+
+# SO
+.DS_Store
+Thumbs.db

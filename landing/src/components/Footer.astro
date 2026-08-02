@@ -1,0 +1,44 @@
+---
+const base = import.meta.env.BASE_URL;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>© {year} RetroSync — GPL-3.0-or-later</span>
+    <nav>
+      <a href={`${base}docs/`}>Documentação</a>
+      <a href="https://github.com/jIDvDIj/retro-sync">GitHub</a>
+      <a href="https://github.com/jIDvDIj/retro-sync/issues">Issues</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    color: var(--text-muted);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  nav {
+    display: flex;
+    gap: 18px;
+  }
+
+  nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    color: var(--text);
+  }
+</style>

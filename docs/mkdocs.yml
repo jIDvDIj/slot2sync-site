@@ -1,0 +1,50 @@
+site_name: RetroSync — Documentação
+site_url: https://jidvdij.github.io/retrosync-site/docs/
+repo_url: https://github.com/jIDvDIj/retro-sync
+repo_name: jIDvDIj/retro-sync
+edit_uri: ""
+
+theme:
+  name: material
+  language: pt-BR
+  favicon: assets/favicon.svg
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Modo claro
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Modo escuro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - content.code.copy
+
+nav:
+  - Início: index.md
+  - Instalação: instalacao.md
+  - Primeiros passos: primeiros-passos.md
+  - Emuladores suportados: emuladores-suportados.md
+  - Sincronização: sincronizacao.md
+  - Resolução de conflitos: resolucao-de-conflitos.md
+  - Privacidade e dados: privacidade-e-dados.md
+  - Solução de problemas: solucao-de-problemas.md
+  - FAQ: faq.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - tables
+  - toc:
+      permalink: true
