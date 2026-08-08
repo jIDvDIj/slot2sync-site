@@ -31,15 +31,43 @@ theme:
     - content.code.copy
 
 nav:
-  - Início: index.md
-  - Instalação: instalacao.md
-  - Primeiros passos: primeiros-passos.md
-  - Emuladores suportados: emuladores-suportados.md
-  - Sincronização: sincronizacao.md
-  - Resolução de conflitos: resolucao-de-conflitos.md
-  - Privacidade e dados: privacidade-e-dados.md
-  - Solução de problemas: solucao-de-problemas.md
-  - FAQ: faq.md
+  - Guia do usuário:
+      - Início: index.md
+      - Instalação: instalacao.md
+      - Primeiros passos: primeiros-passos.md
+      - Emuladores suportados: emuladores-suportados.md
+      - Sincronização: sincronizacao.md
+      - Resolução de conflitos: resolucao-de-conflitos.md
+      - Privacidade e dados: privacidade-e-dados.md
+      - Solução de problemas: solucao-de-problemas.md
+      - FAQ: faq.md
+  - Para desenvolvedores:
+      - Visão geral: dev/index.md
+      - Tutoriais:
+          - Onboarding: dev/tutoriais/onboarding.md
+      - Guias:
+          - Como adicionar suporte a uma plataforma: dev/guias/como-adicionar-plataforma.md
+          - Como adicionar um emulador: dev/guias/como-adicionar-emulador.md
+          - Como adicionar um idioma: dev/guias/como-adicionar-idioma.md
+          - Configurar o tooling pendente: dev/guias/setup-tooling-pendente.md
+      - Explicação:
+          - Arquitetura: dev/explicacao/arquitetura.md
+          - Autenticação: dev/explicacao/autenticacao.md
+          - Sincronização e conflitos: dev/explicacao/sincronizacao-e-conflitos.md
+          - Configurações: dev/explicacao/configuracoes.md
+          - Monitoramento de processos: dev/explicacao/monitoramento-processos.md
+          - UI e system tray: dev/explicacao/ui-e-tray.md
+          - Internacionalização: dev/explicacao/internacionalizacao.md
+          - Distribuição e confiança: dev/explicacao/distribuicao-e-confianca.md
+      - Decisões:
+          - Decisões técnicas: dev/decisoes/decisoes-tecnicas.md
+          - Riscos técnicos: dev/decisoes/riscos.md
+          - Geração automática da boundary IPC: dev/decisoes/geracao-automatica-ipc.md
+      - Roadmap: dev/roadmap.md
+  - Referência técnica:
+      - Boundary IPC: dev/referencia/boundary-ipc.md
+      - Perfis de emulador: dev/referencia/perfis-emulador.md
+      - Status multiplataforma: dev/referencia/status-multiplataforma.md
 
 markdown_extensions:
   - admonition
