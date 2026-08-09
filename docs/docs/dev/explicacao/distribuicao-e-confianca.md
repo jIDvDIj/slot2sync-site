@@ -1,6 +1,6 @@
 # Distribuição pública e confiança
 
-O RetroSync é distribuído para usuários sem relação técnica com o projeto, a partir de um
+O Slot2Sync é distribuído para usuários sem relação técnica com o projeto, a partir de um
 repositório **privado**, como software **proprietário** (não open source) — essa combinação
 elimina várias opções gratuitas de "prova de confiança" e molda as decisões abaixo. Para o
 usuário, confiança se traduz em três coisas concretas: a tela de consentimento do Google não
@@ -10,7 +10,7 @@ e existir um canal público de contato/política de privacidade.
 ## Verificação OAuth do Google
 
 Apps que usam OAuth do Google passam por verificação; enquanto pendente, a tela de consentimento
-mostra um aviso vermelho que exige clique extra do usuário. Como o RetroSync usa o escopo
+mostra um aviso vermelho que exige clique extra do usuário. Como o Slot2Sync usa o escopo
 `drive.file` — não-sensível — a verificação é gratuita e simplificada (o escopo sensível `drive`
 exigiria auditoria paga). É o item de maior impacto por menor esforço: depende só de ter domínio
 próprio verificado e uma página pública de política de privacidade no ar.
@@ -45,7 +45,7 @@ se o nome do repo puder ser público.
 proprietário no Windows (publicar deixou de ter taxa de registro em 2025/2026, tanto para conta
 individual quanto empresa). O bloqueio é técnico, não financeiro: a Store só aceita pacotes
 **MSIX**, que o Tauri v2 não gera nativamente — dependeria de uma ferramenta comunitária
-(`tauri-windows-bundle`) sem suporte declarado explicitamente ao Tauri v2, e o RetroSync precisa
+(`tauri-windows-bundle`) sem suporte declarado explicitamente ao Tauri v2, e o Slot2Sync precisa
 ler pastas de **outros** aplicativos (`%APPDATA%\PPSSPP`, `%APPDATA%\PCSX2` etc.), o que dentro
 do contêiner virtual de filesystem do MSIX pode exigir a capability restrita
 `broadFileSystemAccess` — sujeita a aprovação manual da Microsoft e prazo incerto. Os passos de

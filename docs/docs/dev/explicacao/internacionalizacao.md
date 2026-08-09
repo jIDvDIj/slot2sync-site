@@ -2,7 +2,7 @@
 
 A interface está disponível em inglês (padrão) e português brasileiro, via
 `react-i18next`. O idioma é escolhido pelo usuário num seletor nas configurações e
-persistido em `localStorage` (`retrosync.language`) — não cruza a boundary IPC, porque é
+persistido em `localStorage` (`slot2sync.language`) — não cruza a boundary IPC, porque é
 uma escolha puramente de apresentação do frontend. O menu nativo da bandeja (Rust)
 permanece fixo em inglês.
 

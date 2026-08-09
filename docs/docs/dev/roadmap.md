@@ -19,7 +19,7 @@ reflete o estado atual; aqui só entra o que ainda falta.
 
 ## Robustez do sync
 
-- Tombstone de deleção no manifest — hoje o RetroSync nunca deleta, mas não há registro
+- Tombstone de deleção no manifest — hoje o Slot2Sync nunca deleta, mas não há registro
   explícito de "este arquivo foi removido intencionalmente"; um tombstone permitiria distinguir
   isso de "nunca existiu" em cenários futuros que precisem dessa informação.
 - Caminhos longos no Windows (prefixo `\\?\`), para coleções com árvores de pastas profundas

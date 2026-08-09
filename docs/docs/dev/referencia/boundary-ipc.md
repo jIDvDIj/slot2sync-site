@@ -25,7 +25,7 @@ Comandos marcados **mobile-only** têm uma variante desktop que sempre retorna e
 
 | Comando | Retorno | Descrição |
 | --- | --- | --- |
-| `connect_google_drive` | `AuthStatus` | Abre o consentimento OAuth2 e aguarda autorização. Desktop: loopback TCP. Mobile: deep link `retrosync://oauth`. Emite `auth:status`. |
+| `connect_google_drive` | `AuthStatus` | Abre o consentimento OAuth2 e aguarda autorização. Desktop: loopback TCP. Mobile: deep link `slot2sync://oauth`. Emite `auth:status`. |
 | `get_auth_status` | `AuthStatus` | Status atual sem disparar fluxo interativo (só consulta o keyring/`SecretStore`). |
 | `disconnect_google_drive` | `AuthStatus` | Remove o refresh token e limpa o cache de IDs de pasta (é por conta Google). Emite `auth:status`. |
 

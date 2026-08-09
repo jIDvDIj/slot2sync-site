@@ -1,6 +1,6 @@
 # Como adicionar um novo idioma
 
-O RetroSync hoje suporta **English** (padrão) e **Português (Brasil)**
+O Slot2Sync hoje suporta **English** (padrão) e **Português (Brasil)**
 (`src/i18n/locales/en/`, `src/i18n/locales/pt/`). A infraestrutura de i18n aceita um
 idioma novo sem tocar nos componentes — veja [Internacionalização](../explicacao/internacionalizacao.md)
 para o porquê do design. Passos:

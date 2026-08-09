@@ -1,6 +1,6 @@
 # Sincronização e conflitos
 
-Como o RetroSync decide, para cada arquivo, se sobe, baixa, ignora ou pede ajuda ao usuário.
+Como o Slot2Sync decide, para cada arquivo, se sobe, baixa, ignora ou pede ajuda ao usuário.
 É um único motor de decisão — não três mecanismos separados — que se comporta de forma
 diferente conforme o que o manifest local já sabe sobre aquele arquivo.
 
@@ -21,16 +21,16 @@ no manifest do último sync bem-sucedido:
    filesystem e pequenos desvios de relógio); o par de mtimes `(local, drive)` registrado no
    manifest é o que permite distinguir "nada mudou" de "mudou de um lado" mesmo quando os
    relógios das duas máquinas divergem.
-3. **Com manifest, os dois lados mudaram** — conflito real. O RetroSync não escolhe sozinho:
+3. **Com manifest, os dois lados mudaram** — conflito real. O Slot2Sync não escolhe sozinho:
    registra o conflito, **bloqueia o sync daquele emulador** (os demais continuam normais) e
    notifica o usuário. O card do emulador mostra um botão que abre um modal com os dois lados
    (data, tamanho, dispositivo de origem — todo upload marca `appProperties.device` no arquivo
    do Drive, então dá para saber exatamente qual máquina gravou qual versão). O usuário escolhe
    `local` ou `drive`; ao manter o Drive, o local preterido vai para backup antes de ser
-   sobrescrito; ao manter o local, a versão do Drive é sobrescrita sem backup do RetroSync
+   sobrescrito; ao manter o local, a versão do Drive é sobrescrita sem backup do Slot2Sync
    (conta com o histórico de revisões do próprio Drive como rede de segurança).
 
-Sobrescrever sem perguntar é justamente o que as duas primeiras versões do RetroSync faziam
+Sobrescrever sem perguntar é justamente o que as duas primeiras versões do Slot2Sync faziam
 por padrão (comparar mtime bruto), e cada uma perdeu saves de verdade — daí o backup automático
 no primeiro sync e o bloqueio explícito em conflito real serem tratados como parte do motor de
 decisão, não como exceções.

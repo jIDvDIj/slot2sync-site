@@ -2,7 +2,7 @@
 
 ## Visão geral
 
-RetroSync é um app Tauri v2 com dois lados bem separados:
+Slot2Sync é um app Tauri v2 com dois lados bem separados:
 
 - **Frontend** (`src/`): React + TypeScript + Vite. Responsável apenas por apresentação
   e interação. Dispara comandos via `invoke()` e reage a eventos via `listen()`.
@@ -16,7 +16,7 @@ A comunicação acontece exclusivamente pela **boundary do Tauri**: comandos
 ## Diagrama de componentes
 
 ```
-┌─────────────────────────── RetroSync (Tauri v2) ────────────────────────────┐
+┌─────────────────────────── Slot2Sync (Tauri v2) ────────────────────────────┐
 │                                                                              │
 │  ┌─────────── Frontend (React + TS + Vite) ───────────┐                     │
 │  │  componentes de tela ─ hooks (useAuth, useEmulators,│                     │
@@ -50,7 +50,7 @@ A comunicação acontece exclusivamente pela **boundary do Tauri**: comandos
 └──────────────────────┼───────────────────────────────────────────────────────┘
                        ▼
               Google Drive API v3
-        RetroSync/ ─ <Emulador>/ ─ {saves,savestates,config}/ ─ sync_manifest.json
+        Slot2Sync/ ─ <Emulador>/ ─ {saves,savestates,config}/ ─ sync_manifest.json
 ```
 
 ## Fluxo de dados de um sync
@@ -86,9 +86,9 @@ idêntico independente de quem disparou.
 
 | Gatilho | Origem | Direção |
 | --- | --- | --- |
-| Iniciar o RetroSync | setup do Tauri | Bidirecional |
+| Iniciar o Slot2Sync | setup do Tauri | Bidirecional |
 | Sync manual | comando `sync_now` / tray | Bidirecional |
-| Fechar o RetroSync (Sair da tray) | handler do menu "Sair", antes de `app.exit` | Bidirecional |
+| Fechar o Slot2Sync (Sair da tray) | handler do menu "Sair", antes de `app.exit` | Bidirecional |
 | Emulador abriu | process watcher | Drive → Local |
 | Emulador fechou | process watcher | Local → Drive |
 
@@ -128,7 +128,7 @@ configurações, eventos de sync, etc.), e toda chamada `invoke` passa por `lib/
 Criada automaticamente, de forma idempotente, com escopo `drive.file`:
 
 ```
-RetroSync/
+Slot2Sync/
 ├── <Emulador>/
 │   ├── saves/
 │   ├── savestates/

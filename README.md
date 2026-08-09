@@ -1,6 +1,6 @@
-# retrosync-site
+# slot2sync-site
 
-Site institucional e documentação do [RetroSync](https://github.com/jIDvDIj/retro-sync).
+Site institucional e documentação do [Slot2Sync](https://github.com/jIDvDIj/slot2sync).
 
 
 ## Estrutura

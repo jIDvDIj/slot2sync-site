@@ -1,13 +1,13 @@
 # Referência — Status da portabilidade multiplataforma
 
-> **Objetivo**: disponibilizar o RetroSync em **Windows, Linux, macOS, Steam Deck,
+> **Objetivo**: disponibilizar o Slot2Sync em **Windows, Linux, macOS, Steam Deck,
 > Android e iOS**, a partir do app desktop Tauri v2. Esta página é a fonte única do
 > status por fase.
 
 ## Estratégia
 
 O Tauri v2 cobre as seis plataformas (desktop: Windows/macOS/Linux; mobile:
-Android/iOS). O núcleo do RetroSync é agnóstico — o `SyncEngine` opera sobre
+Android/iOS). O núcleo do Slot2Sync é agnóstico — o `SyncEngine` opera sobre
 `SyncTarget` (rótulo + listas de caminhos) e não conhece emulador nem SO, o que torna a
 portabilidade viável sem reescrever a lógica de sync.
 
@@ -35,10 +35,10 @@ a pasta uma vez → sincroniza sob demanda".
 | 2 — Abstração de storage (`LocalStorage`/`FileLoc`) | Todo I/O do engine isolado atrás do trait; `DesktopStorage` implementa via `tokio::fs`. | ✅ Concluída |
 | 3 — Scaffolding Android | SDK/NDK, `tauri android init`, APK debug em device físico. | ✅ Concluída |
 | 4 — Plugin nativo de acesso a saves (SAF/bookmarks) | Lado Rust (`MobileStorage`, `PluginBridge`) pronto e validado por compilação Android. Esqueleto Kotlin (`StoragePlugin.kt`) escrito, não validado em device. iOS (Swift) não implementado. | 🟡 Interface Rust pronta |
-| 5 — OAuth mobile (deep link) | Client OAuth Web único cobrindo desktop+Android via o proxy Worker (`/oauth/callback` + `MOBILE_REDIRECT_SUFFIX`), deep link `com.retrosync.app:/oauth2redirect`. | ✅ Concluída |
+| 5 — OAuth mobile (deep link) | Client OAuth Web único cobrindo desktop+Android via o proxy Worker (`/oauth/callback` + `MOBILE_REDIRECT_SUFFIX`), deep link `com.slot2sync.app:/oauth2redirect`. | ✅ Concluída |
 | 6 — Keyring mobile (`SecretStore`) | Trait `SecretStore`; `KeyringStore` (desktop) e `SqliteSecretStore` (mobile, tabela `secrets`). | ✅ Concluída |
 | 7 — Gatilhos e UI mobile | `resume`/`pause` como gatilhos de sync; `AddEmulatorModal`/`SettingsModal` adaptados por plataforma (`usePlatform`/`isMobile`). | ✅ Concluída |
-| 8 — Empacotamento e distribuição mobile | APK assinado (`retrosync.jks`) e job `android` no CI existem; secrets do GitHub ainda não cadastrados (`if: false` nos jobs `android`/`android-check`). iOS (App Store) não iniciado. | 🟡 Secrets pendentes |
+| 8 — Empacotamento e distribuição mobile | APK assinado (`slot2sync.jks`) e job `android` no CI existem; secrets do GitHub ainda não cadastrados (`if: false` nos jobs `android`/`android-check`). iOS (App Store) não iniciado. | 🟡 Secrets pendentes |
 
 ## Onde rodar o quê
 

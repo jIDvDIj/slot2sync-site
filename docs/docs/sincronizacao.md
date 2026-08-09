@@ -6,7 +6,7 @@ Cada gatilho pode ser ligado ou desligado individualmente nas configurações do
 
 | Gatilho | Quando dispara | Padrão |
 | --- | --- | --- |
-| Ao abrir o RetroSync | sincroniza tudo assim que o app inicia | ligado |
+| Ao abrir o Slot2Sync | sincroniza tudo assim que o app inicia | ligado |
 | Ao abrir um emulador | baixa os saves mais recentes do Drive antes do jogo começar | ligado |
 | Ao fechar um emulador | envia o progresso novo para o Drive | ligado |
 
@@ -25,7 +25,7 @@ Por padrão, as duas vêm ligadas.
 
 ## Como funciona por baixo
 
-O RetroSync compara a data de modificação dos arquivos locais com a versão que ele
+O Slot2Sync compara a data de modificação dos arquivos locais com a versão que ele
 conhece do Drive:
 
 - só o lado local mudou → envia para o Drive;
@@ -33,10 +33,10 @@ conhece do Drive:
 - **os dois lados mudaram** → vira um [conflito](resolucao-de-conflitos.md), nunca uma
   sobrescrita silenciosa.
 
-O RetroSync **nunca deleta arquivos no Drive** — apenas adiciona e atualiza.
+O Slot2Sync **nunca deleta arquivos no Drive** — apenas adiciona e atualiza.
 
 ## Sem internet ou arquivo em uso
 
 Se a sincronização não puder acontecer (sem rede, ou o arquivo está sendo usado pelo
-emulador naquele instante), o RetroSync guarda isso como uma pendência e tenta de novo
+emulador naquele instante), o Slot2Sync guarda isso como uma pendência e tenta de novo
 mais tarde — nunca aparece como um erro que interrompe o uso do app.

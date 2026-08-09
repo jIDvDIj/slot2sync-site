@@ -34,7 +34,7 @@ O job `coverage` do CI roda os testes Rust e gera o relatório mesmo sem configu
 mas o **upload** para o Codecov precisa do token:
 
 1. Acesse [app.codecov.io](https://app.codecov.io) e faça login com a conta GitHub.
-2. Ative o repositório `jIDvDIj/retro-sync` e copie o **Upload token**.
+2. Ative o repositório `jIDvDIj/slot2sync` e copie o **Upload token**.
 3. No GitHub: **Settings → Secrets and variables → Actions → New repository secret**
    - Nome: `CODECOV_TOKEN`
    - Valor: o token copiado.

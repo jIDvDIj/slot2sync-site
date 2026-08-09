@@ -6,7 +6,7 @@ Um conflito acontece quando **o mesmo arquivo mudou nos dois lados** — na máq
 e no Drive — desde a última sincronização. É o caso, por exemplo, de jogar a mesma
 partida em dois computadores sem sincronizar entre uma sessão e outra.
 
-O RetroSync nunca decide sozinho nesse caso: ele pausa a sincronização **daquele
+O Slot2Sync nunca decide sozinho nesse caso: ele pausa a sincronização **daquele
 emulador específico** e avisa você por notificação nativa. Os demais emuladores, sem
 conflito, continuam sincronizando normalmente.
 

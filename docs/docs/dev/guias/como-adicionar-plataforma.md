@@ -1,6 +1,6 @@
 # Como adicionar código por plataforma
 
-Guia prático de **onde e como** escrever código específico de plataforma no RetroSync, sem
+Guia prático de **onde e como** escrever código específico de plataforma no Slot2Sync, sem
 quebrar o build dos outros SOs. Complementa a [Referência — Status multiplataforma](../referencia/status-multiplataforma.md).
 
 Este guia mostra os passos concretos para adicionar um comando ou módulo Rust que seja:

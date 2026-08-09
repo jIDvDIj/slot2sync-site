@@ -25,7 +25,7 @@ substituível. Custo: todo dado de UI precisa cruzar a boundary explicitamente.
 
 **Escolha**: `drive.file` + `openid email`.
 
-**Justificativa**: é exatamente o que o RetroSync precisa (ele cria a pasta `RetroSync/`);
+**Justificativa**: é exatamente o que o Slot2Sync precisa (ele cria a pasta `Slot2Sync/`);
 é **não-sensível**, o que evita o processo de verificação restrita do Google (auditoria
 cara e lenta); reduz o risco para o usuário (o app não vê o resto do Drive dele).
 Alternativa `drive` rejeitada por excesso de permissão e fricção de publicação.
@@ -67,9 +67,9 @@ browser usado pelo app (retorna `invalid_request`).
 **Escolha**: um único client OAuth tipo **Web application**, com duas redirect URIs
 registradas — `http://127.0.0.1` (desktop, qualquer porta) e `https://<worker>/oauth/callback`
 (Android). O Worker ganhou um endpoint novo, `GET /oauth/callback`, que recebe o `code` do
-Google e faz um redirect 302 para o deep link `com.retrosync.app:/oauth2redirect?...`; o app
+Google e faz um redirect 302 para o deep link `com.slot2sync.app:/oauth2redirect?...`; o app
 mobile escuta esse deep link e troca o `code` no `/token` do Worker normalmente.
-`RETROSYNC_GOOGLE_CLIENT_ID_ANDROID` (client dedicado da tentativa anterior) foi removido —
+`SLOT2SYNC_GOOGLE_CLIENT_ID_ANDROID` (client dedicado da tentativa anterior) foi removido —
 desktop e mobile passaram a compartilhar as mesmas variáveis de ambiente.
 
 **Justificativa**: um client único simplifica a configuração (uma entrada no Google Console,
@@ -229,7 +229,7 @@ rodando?" vs. "um arquivo mudou?") e são complementares, não substitutos um do
 
 ## Instância única do app via `tauri_plugin_single_instance`
 
-**Contexto**: o RetroSync vive na bandeja; abrir o executável de novo enquanto já está
+**Contexto**: o Slot2Sync vive na bandeja; abrir o executável de novo enquanto já está
 rodando não deveria criar uma segunda instância (watchers e sync duplicados, conflito de
 lock do SQLite).
 
@@ -258,7 +258,7 @@ controle via limites explícitos em vez de acúmulo indefinido.
 
 ## Limitação de banda e intervalo de scan configuráveis
 
-**Contexto**: o RetroSync roda em segundo plano; usuários com conexões limitadas ou muitos
+**Contexto**: o Slot2Sync roda em segundo plano; usuários com conexões limitadas ou muitos
 arquivos monitorados podem querer conter o impacto do sync automático.
 
 **Escolha**: limites de upload/download em KB/s (0 = ilimitado) e intervalo do scan
@@ -344,7 +344,7 @@ a closure `build` reconstrói o request a cada tentativa.
 
 ## App vive na tray; fechar a janela ≠ sair
 
-**Contexto**: o gatilho "sync ao fechar o RetroSync" precisa rodar de forma confiável.
+**Contexto**: o gatilho "sync ao fechar o Slot2Sync" precisa rodar de forma confiável.
 
 **Escolha**: fechar a janela (`WindowEvent::CloseRequested`) apenas a esconde
 (`prevent_close` + `hide`); o app continua na bandeja. O sync de despedida

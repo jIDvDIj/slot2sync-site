@@ -1,6 +1,6 @@
 # Riscos Técnicos e Mitigações
 
-Riscos identificados na arquitetura do RetroSync e como cada um é tratado. A coluna
+Riscos identificados na arquitetura do Slot2Sync e como cada um é tratado. A coluna
 **Status** indica se a mitigação já está no código ou ainda é planejada.
 
 | # | Risco | Mitigação | Status |

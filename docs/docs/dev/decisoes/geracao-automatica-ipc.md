@@ -4,7 +4,7 @@
 
 ## Contexto
 
-A boundary IPC do RetroSync exige sincronização manual de **três lugares** a cada mudança de
+A boundary IPC do Slot2Sync exige sincronização manual de **três lugares** a cada mudança de
 struct, enum ou evento: a struct Rust (`#[derive(Serialize, Deserialize)]` +
 `#[serde(rename_all = "camelCase")]`), a interface TypeScript espelho em `src/types/ipc.ts`, e
 o wrapper tipado de `invoke()` em `src/lib/ipc.ts`. Não há nenhuma verificação em tempo de

@@ -1,6 +1,6 @@
 # Monitoramento de processos
 
-Como o RetroSync detecta que um emulador abriu ou fechou, e por que isso dispara sync
+Como o Slot2Sync detecta que um emulador abriu ou fechou, e por que isso dispara sync
 direcionado: abrir → Drive → Local (saves frescos antes do jogo carregar); fechar →
 Local → Drive (sobe os saves da sessão).
 
@@ -73,7 +73,7 @@ Com o Drive conectado e um emulador cadastrado:
 1. Abra o emulador → o log mostra a transição detectada e dispara um sync Drive → Local;
 2. Jogue, salve e feche o emulador → após alguns segundos, um sync Local → Drive sobe os
    saves da sessão;
-3. Acompanhe em `%LOCALAPPDATA%\com.retrosync.app\logs\retrosync.log`.
+3. Acompanhe em `%LOCALAPPDATA%\com.slot2sync.app\logs\slot2sync.log`.
 
 > O caminho real do `sysinfo` não é exercitável no WSL (sem GUI nem emuladores), mas toda
 > a lógica de decisão — a parte sujeita a bug — está coberta por testes automatizados.

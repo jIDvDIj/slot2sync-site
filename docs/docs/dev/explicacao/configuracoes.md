@@ -34,7 +34,7 @@ Cada gatilho automático pode ser ligado/desligado individualmente:
 
 | Gatilho | Direção | Padrão |
 | --- | --- | --- |
-| `startup` | Sync ao abrir o RetroSync | ligado |
+| `startup` | Sync ao abrir o Slot2Sync | ligado |
 | `emulator-start` | Download antes de o emulador abrir | ligado |
 | `emulator-stop` | Upload ao fechar o emulador | ligado |
 

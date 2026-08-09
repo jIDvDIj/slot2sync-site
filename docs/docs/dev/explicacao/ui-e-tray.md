@@ -25,7 +25,7 @@ O sync de despedida roda no handler do menu **"Sair"** — uma saída intenciona
 controlável — e não no evento `ExitRequested` do runtime, que exigiria prevenir a saída
 e re-disparar o `exit` depois do sync assíncrono terminar. Como fechar a janela apenas
 esconde, o único caminho de saída real do app passa pelo "Sair", então o sync de
-despedida sempre roda quando o usuário efetivamente encerra o RetroSync.
+despedida sempre roda quando o usuário efetivamente encerra o Slot2Sync.
 
 ## Último sync compartilhado
 

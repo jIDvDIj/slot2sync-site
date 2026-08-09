@@ -1,10 +1,10 @@
 # Onboarding do desenvolvedor
 
-Tutorial de onboarding para quem vai desenvolver no RetroSync: do clone do repositório até
+Tutorial de onboarding para quem vai desenvolver no Slot2Sync: do clone do repositório até
 rodar o app, buildar, validar a qualidade do código e entender por onde começar.
 
 > Para a **visão geral do produto**, veja o
-> [`README.md`](https://github.com/jIDvDIj/retro-sync#readme) do repositório de código.
+> [`README.md`](https://github.com/jIDvDIj/slot2sync#readme) do repositório de código.
 > Para **arquitetura e decisões**, comece por [Arquitetura](../explicacao/arquitetura.md).
 
 ---
@@ -33,7 +33,7 @@ Referência oficial: [tauri.app/start/prerequisites](https://tauri.app/start/pre
 
 ```bash
 git clone <url-do-repo>
-cd retro-sync
+cd slot2sync
 npm install                  # dependências do frontend
 sh scripts/install-hooks.sh  # instala o hook que valida Conventional Commits
 ```
@@ -58,8 +58,8 @@ erro explicativo. Para habilitar o Drive:
 2. Copie `.env.example` → `.env` na raiz e preencha:
 
    ```
-   RETROSYNC_GOOGLE_CLIENT_ID=seu-client-id
-   RETROSYNC_GOOGLE_CLIENT_SECRET=seu-secret   # só no fluxo de dev local sem Worker
+   SLOT2SYNC_GOOGLE_CLIENT_ID=seu-client-id
+   SLOT2SYNC_GOOGLE_CLIENT_SECRET=seu-secret   # só no fluxo de dev local sem Worker
    ```
 
 O `src-tauri/build.rs` injeta essas variáveis em build-time (variáveis do shell têm
@@ -76,7 +76,7 @@ mesmo cria.
 No **PowerShell** (Windows nativo):
 
 ```bash
-npm run tauri dev      # compila o Rust na 1ª vez e abre a janela "RetroSync"
+npm run tauri dev      # compila o Rust na 1ª vez e abre a janela "Slot2Sync"
 ```
 
 A janela deve exibir o status do backend pronto — confirma a boundary `invoke` → Rust
@@ -91,7 +91,7 @@ npm run tauri build    # gera o instalador/binário de produção
 ```
 
 Logs de operação ficam no diretório de logs do app
-(`%LOCALAPPDATA%\com.retrosync.app\logs` no Windows), com rotação diária.
+(`%LOCALAPPDATA%\com.slot2sync.app\logs` no Windows), com rotação diária.
 
 ---
 
@@ -146,7 +146,7 @@ Se você desenvolve a partir do WSL2 (com o repo em `/mnt/c`):
   cargo:
 
   ```bash
-  export CARGO_TARGET_DIR=$HOME/.cache/retro-sync-target
+  export CARGO_TARGET_DIR=$HOME/.cache/slot2sync-target
   ```
 
   Coloque esse `export` no seu `~/.bashrc` ou `~/.zshrc` para não precisar repetir.
@@ -208,7 +208,7 @@ Leituras recomendadas, nesta ordem:
 
 Processo de PR, convenção de commits, credenciais de desenvolvimento e o que evitar num PR
 estão em
-[`CONTRIBUTING.md`](https://github.com/jIDvDIj/retro-sync/blob/main/CONTRIBUTING.md), no
+[`CONTRIBUTING.md`](https://github.com/jIDvDIj/slot2sync/blob/main/CONTRIBUTING.md), no
 repositório de código — leia antes de abrir um Pull Request.
 
 - **Documentação**: mudança relevante ou decisão técnica nova? Atualize a página

@@ -1,6 +1,6 @@
-# Documentação do RetroSync
+# Documentação do Slot2Sync
 
-Documentação técnica do RetroSync — aplicação desktop (Tauri v2 + Rust + React/TS)
+Documentação técnica do Slot2Sync — aplicação desktop (Tauri v2 + Rust + React/TS)
 que sincroniza automaticamente saves, savestates e configurações de emuladores de
 retrogames com o Google Drive.
 
@@ -10,8 +10,8 @@ respondem "como/por que X funciona". Decisões e riscos ficam num registro à pa
 não são nenhuma das quatro coisas acima, são histórico de raciocínio.
 
 Para a visão geral do produto e os objetivos que guiam as decisões de projeto, veja o
-[`README.md`](https://github.com/jIDvDIj/retro-sync#readme) e o
-[`GOALS.md`](https://github.com/jIDvDIj/retro-sync/blob/main/GOALS.md) na raiz do repositório.
+[`README.md`](https://github.com/jIDvDIj/slot2sync#readme) e o
+[`GOALS.md`](https://github.com/jIDvDIj/slot2sync/blob/main/GOALS.md) na raiz do repositório.
 
 ## Tutoriais
 
@@ -65,5 +65,5 @@ Para a visão geral do produto e os objetivos que guiam as decisões de projeto,
 
 Fluxo de PR, convenção de commits e como configurar credenciais de desenvolvimento (OAuth
 próprio, nunca as de produção) estão em
-[`CONTRIBUTING.md`](https://github.com/jIDvDIj/retro-sync/blob/main/CONTRIBUTING.md), no
+[`CONTRIBUTING.md`](https://github.com/jIDvDIj/slot2sync/blob/main/CONTRIBUTING.md), no
 repositório de código.

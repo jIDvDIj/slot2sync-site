@@ -3,7 +3,7 @@
 ## Windows
 
 1. Baixe o instalador mais recente na página de
-   [releases do RetroSync](https://github.com/jIDvDIj/retro-sync/releases/latest).
+   [releases do Slot2Sync](https://github.com/jIDvDIj/slot2sync/releases/latest).
 2. Execute o instalador e siga o assistente.
 3. Na primeira execução, o Windows SmartScreen pode exibir um aviso porque o instalador
    é de um desenvolvedor independente — clique em **Mais informações → Executar assim
@@ -11,7 +11,7 @@
 
 !!! info "Outras plataformas"
     Suporte a macOS e Android está em desenvolvimento. Acompanhe o progresso nas
-    [releases do projeto](https://github.com/jIDvDIj/retro-sync/releases).
+    [releases do projeto](https://github.com/jIDvDIj/slot2sync/releases).
 
 ## Requisitos
 

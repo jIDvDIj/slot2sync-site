@@ -1,6 +1,6 @@
 # Referência — Perfis de emulador
 
-Como o RetroSync reconhece emuladores e monta o `EmulatorProfile` que alimenta o sync.
+Como o Slot2Sync reconhece emuladores e monta o `EmulatorProfile` que alimenta o sync.
 Fonte de verdade: `src-tauri/src/emulator/mod.rs`, `profiles.rs` e `profiles.toml`.
 
 ## `EmulatorProfile`
@@ -21,7 +21,7 @@ pode editá-lo por emulador nas configurações (comando `set_exclude_patterns`)
 
 ## Catálogo declarativo (`profiles.toml`)
 
-O RetroSync **não** tem um módulo Rust por emulador. Cada emulador conhecido é uma
+O Slot2Sync **não** tem um módulo Rust por emulador. Cada emulador conhecido é uma
 entrada `[[emulator]]` em `src-tauri/src/emulator/profiles.toml`, embutida no binário
 via `include_str!` e parseada uma vez (`OnceLock`). Campos:
 

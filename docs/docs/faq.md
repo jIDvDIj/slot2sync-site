@@ -1,6 +1,6 @@
 # FAQ
 
-**O RetroSync tem acesso a todo o meu Google Drive?**
+**O Slot2Sync tem acesso a todo o meu Google Drive?**
 
 Não. Ele usa o escopo `drive.file`, que só permite enxergar os arquivos que ele mesmo
 cria. Veja mais em [Privacidade e dados](privacidade-e-dados.md).
@@ -9,7 +9,7 @@ cria. Veja mais em [Privacidade e dados](privacidade-e-dados.md).
 
 Nunca. A sincronização só adiciona e atualiza arquivos.
 
-**Preciso deixar o RetroSync aberto o tempo todo?**
+**Preciso deixar o Slot2Sync aberto o tempo todo?**
 
 Sim, no sentido de que ele precisa estar rodando (na bandeja do sistema) para detectar
 quando um emulador abre ou fecha e sincronizar automaticamente. Fechar a janela não
@@ -18,7 +18,7 @@ encerra o app — só o item **Sair** da bandeja faz isso.
 **O que acontece se eu editar o mesmo save em duas máquinas sem sincronizar entre uma
 sessão e outra?**
 
-Vira um conflito explícito — o RetroSync nunca escolhe sozinho qual versão manter. Veja
+Vira um conflito explícito — o Slot2Sync nunca escolhe sozinho qual versão manter. Veja
 [Resolução de conflitos](resolucao-de-conflitos.md).
 
 **Funciona sem internet?**
@@ -35,4 +35,4 @@ novo.
 **O código é aberto?**
 
 Sim, licenciado sob GPL-3.0-or-later — o
-[repositório está no GitHub](https://github.com/jIDvDIj/retro-sync).
+[repositório está no GitHub](https://github.com/jIDvDIj/slot2sync).

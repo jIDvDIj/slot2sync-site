@@ -12,7 +12,7 @@ familiaridade com os campos do catálogo em
 
 Instale o emulador, rode-o uma vez para ele criar sua estrutura de pastas, e identifique:
 
-- A pasta raiz que o usuário vai apontar no RetroSync (ou, se o emulador só grava saves
+- A pasta raiz que o usuário vai apontar no Slot2Sync (ou, se o emulador só grava saves
   dentro da própria instalação, essa raiz).
 - Uma **base** dentro dela — a pasta que efetivamente contém saves/config (às vezes é a
   própria raiz, às vezes uma subpasta como `PSP/` ou `memstick/PSP/` no PPSSPP).
@@ -83,19 +83,19 @@ Rode `cargo test --manifest-path src-tauri/Cargo.toml detecta_superemu` (com
 ## 4. Habilite a descoberta automática (opcional)
 
 Se preencheu `data_dirs`/`registry`, teste `discover_emulators` manualmente: instale o
-emulador de verdade numa máquina (ou VM) sem apontar nada no RetroSync, abra o app e
+emulador de verdade numa máquina (ou VM) sem apontar nada no Slot2Sync, abra o app e
 confirme que ele aparece como sugestão. No Windows, `registry.uninstall_names` casa contra
 o `DisplayName` das chaves de desinstalação — confira o nome exato na chave de registro do
 instalador, não assuma que bate com o nome do processo.
 
 ## 5. Teste de ponta a ponta
 
-1. Aponte manualmente a pasta raiz do emulador instalado na UI do RetroSync e confirme que
+1. Aponte manualmente a pasta raiz do emulador instalado na UI do Slot2Sync e confirme que
    ele é reconhecido (`add_emulator`/`detect_emulator`).
 2. Rode um sync manual e confirme no Google Drive que a estrutura
-   `RetroSync/SuperEmu/{saves,savestates,config}` foi criada e os arquivos certos foram
+   `Slot2Sync/SuperEmu/{saves,savestates,config}` foi criada e os arquivos certos foram
    enviados.
-3. Abra e feche o emulador com o RetroSync rodando e confirme que os gatilhos automáticos
+3. Abra e feche o emulador com o Slot2Sync rodando e confirme que os gatilhos automáticos
    (`emulator-start`/`emulator-stop`) disparam — o nome em `process_names` precisa bater
    exatamente com o processo do SO (case-insensitive, mas sem sufixos/prefixos extras).
 
