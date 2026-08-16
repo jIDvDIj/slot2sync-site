@@ -29,15 +29,15 @@ para software proprietário fora de uma loja de apps. Foram avaliadas as alterna
 - **Microsoft Store**: apps aprovados não disparam o SmartScreen — a Microsoft assina por conta
   própria na publicação. É a única opção gratuita que resolve o problema de forma definitiva.
 
-## GitHub Attestations — avaliado e descartado
+## GitHub Attestations — adotado
 
-`actions/attest-build-provenance` gera atestação SLSA assinada, verificável via
-`gh attestation verify`. Foi descartado por ser **incompatível com repositório privado**: a
-verificação exige acesso de leitura ao repo (um usuário final comum não tem), e a geração da
-atestação pode falhar em conta pessoal/Pro com repo privado (o recurso completo normalmente
-exige GitHub Enterprise). Alternativa viável não adotada: Cosign/Sigstore, que verifica sem
-acesso ao repo mas expõe o nome do repositório e do workflow no log público Rekor — aceitável só
-se o nome do repo puder ser público.
+`actions/attest-build-provenance` gera atestação SLSA assinada (Sigstore), verificável via
+`gh attestation verify`, para cada instalador publicado no release. A ressalva original deste
+registro — incompatibilidade com repositório privado, já que a verificação exige acesso de
+leitura ao repo que um usuário final comum não teria — não se aplica mais: o repositório é
+**público** hoje. O restante desta página ainda assume o modelo "repositório privado, software
+proprietário" da época em que foi escrita; as seções de SmartScreen/Microsoft Store abaixo não
+foram revisadas à luz dessa mudança e podem precisar de nova leitura.
 
 ## Microsoft Store — estratégia principal, ainda não implementada
 
