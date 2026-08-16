@@ -6,9 +6,10 @@ carregado uma vez no nível do App (evita estado duplicado entre o cabeçalho e 
 
 ## Nome do dispositivo
 
-Obrigatório no momento do login — o botão de conectar ao Drive só habilita depois de
-preenchido — porque identifica a origem de cada versão sincronizada desde o primeiro sync
-(usado tanto no snapshot publicado no Drive quanto, por arquivo, em conflitos). Pode ser
+Obrigatório no momento do login — o botão de conectar (qualquer que seja o provedor escolhido,
+ver [Provedores de storage](./provedores-de-storage.md)) só habilita depois de preenchido —
+porque identifica a origem de cada versão sincronizada desde o primeiro sync (usado tanto no
+snapshot publicado no provedor remoto quanto, por arquivo, em conflitos). Pode ser
 renomeado depois nas configurações sem refazer a autenticação: é só um rótulo persistido
 localmente e republicado no próximo sync, então não há motivo para exigir OAuth de novo.
 
@@ -68,5 +69,5 @@ Três ajustes adicionais, todos com efeito imediato (sem precisar reiniciar o ap
 - **Máximo de versões arquivadas** por arquivo no histórico pré-download (mínimo 1) — ver
   [Referência — Boundary IPC](../referencia/boundary-ipc.md#backups-e-versionamento).
 - **Limites de banda** de upload/download em KB/s (0 = ilimitado) e **intervalo do scan
-  periódico** em minutos (0 = desativado) — o cliente Drive e o timer de scan releem o valor a
-  cada operação/ciclo, sem precisar reiniciar.
+  periódico** em minutos (0 = desativado) — o cliente do provedor ativo e o timer de scan
+  releem o valor a cada operação/ciclo, sem precisar reiniciar.

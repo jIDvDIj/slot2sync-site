@@ -22,6 +22,7 @@ acesso a arquivos e de gatilhos**:
 | Bandeja / janela escondível | sim | não existe (webview único) |
 | Token OAuth | Keychain/Win/Secret Service | iOS Keychain / Android Keystore |
 | Redirect do OAuth | loopback / proxy Worker | deep link (esquema de URI) |
+| Provedor "pasta local/de rede" | sim (diálogo nativo de pasta) | não (nenhum caminho de filesystem direto sem SAF) |
 
 Decisão de produto: no mobile o sync não precisa ser automático — o modelo é "configura
 a pasta uma vez → sincroniza sob demanda".

@@ -21,13 +21,20 @@ Comandos marcados **mobile-only** têm uma variante desktop que sempre retorna e
 | --- | --- | --- |
 | `health_check` | `HealthStatus` | Verificação mínima de que a boundary está funcional; inclui `isMobile`. |
 
-### Autenticação
+### Autenticação e provedor de storage
+
+Ver [Provedores de storage](../explicacao/provedores-de-storage.md) para o que cada provedor
+suporta hoje — `connect_dropbox`/`connect_onedrive` existem na boundary e funcionam de ponta a
+ponta, mas ficam sem botão acessível na UI até terem credenciais de produção cadastradas.
 
 | Comando | Retorno | Descrição |
 | --- | --- | --- |
-| `connect_google_drive` | `AuthStatus` | Abre o consentimento OAuth2 e aguarda autorização. Desktop: loopback TCP. Mobile: deep link `slot2sync://oauth`. Emite `auth:status`. |
-| `get_auth_status` | `AuthStatus` | Status atual sem disparar fluxo interativo (só consulta o keyring/`SecretStore`). |
-| `disconnect_google_drive` | `AuthStatus` | Remove o refresh token e limpa o cache de IDs de pasta (é por conta Google). Emite `auth:status`. |
+| `connect_google_drive` | `AuthStatus` | Abre o consentimento OAuth2 do Google e aguarda autorização. Desktop: loopback TCP. Mobile: deep link `slot2sync://oauth`. Emite `auth:status`. |
+| `connect_dropbox` | `AuthStatus` | Mesmo fluxo OAuth2+PKCE, para o Dropbox (sem proxy — client público). |
+| `connect_onedrive` | `AuthStatus` | Mesmo fluxo OAuth2+PKCE, para o OneDrive/Microsoft Graph (sem proxy — client público). |
+| `connect_local_folder` | `AuthStatus` | Valida que o caminho informado existe e é gravável (cria se preciso) e o adota como provedor ativo. Sem OAuth. |
+| `get_auth_status` | `AuthStatus` | Status do provedor ativo, sem disparar fluxo interativo (provedores OAuth: consulta o keyring/`SecretStore`; pasta local: confere se o caminho salvo ainda existe). |
+| `disconnect_provider` | `AuthStatus` | Desconecta do provedor ativo (qualquer um): remove o refresh token quando OAuth e limpa o cache de IDs de pasta. Emite `auth:status`. |
 
 ### Emuladores — detecção e cadastro
 
@@ -57,7 +64,7 @@ Comandos marcados **mobile-only** têm uma variante desktop que sempre retorna e
 | `sync_now` | `SyncSummary` | Sync manual (bidirecional), gatilho `manual`. |
 | `get_last_sync` | `Option<LastSync>` | Último sync concluído nesta execução do app. |
 | `list_conflicts` | `Vec<Conflict>` | Conflitos pendentes (ambos os lados mudaram desde o último sync). |
-| `resolve_conflict` | `void` | Resolve um conflito mantendo `local` ou `drive`; desbloqueia o sync do emulador. |
+| `resolve_conflict` | `void` | Resolve um conflito mantendo `local` ou `remote`; desbloqueia o sync do emulador. |
 | `list_pending_ops` | `Vec<PendingOp>` | Fila offline visível: arquivos cuja transferência falhou e será refeita. |
 | `retry_pending_op` | `void` | Zera tentativas/backoff de uma pendência (inclusive mortas), liberando retry no próximo sync. |
 
@@ -109,18 +116,19 @@ Comandos marcados **mobile-only** têm uma variante desktop que sempre retorna e
 | `sync:completed` | `SyncSummary` | Fim de um sync bem-sucedido. |
 | `sync:error` | `SyncErrorEvent` | Erro que interrompeu o sync. `emulator: null` = erro geral, não específico de um emulador. |
 | `sync:conflict` | `Conflict` | Conflito detectado (ambos os lados mudaram). |
-| `auth:status` | `AuthStatus` | Após `connect_google_drive`/`disconnect_google_drive`. |
+| `auth:status` | `AuthStatus` | Após `connect_google_drive`/`connect_dropbox`/`connect_onedrive`/`disconnect_provider`. |
 | `emulator:status` | `EmulatorStatusEvent` | Emulador monitorado abriu ou fechou (process watcher). |
 
 ## Tipos compartilhados
 
 Ver `src/types/ipc.ts` para a forma exata de cada interface (é o espelho TS oficial,
 gerado manualmente a partir das structs Rust com `#[serde(rename_all = "camelCase")]`).
-Tipos principais: `HealthStatus`, `AuthStatus`, `Settings` + `TriggerSettings` +
-`NotificationLevel`, `EmulatorProfile` + `DiscoveredEmulator` + `DiscoverySource`,
-`SyncCategories`, `SyncedGame`, `EmulatorStats`, `SyncSummary` + `SyncProgress` +
-`SyncStarted` + `SyncDirection` + `LastSync`, `Conflict` + `ConflictResolution`,
-`PendingOp`, `FileVersion`, `BackupEntry`.
+Tipos principais: `HealthStatus`, `AuthStatus`, `ProviderKind` (qual provedor de storage está
+ativo — ver [Provedores de storage](../explicacao/provedores-de-storage.md)), `Settings` +
+`TriggerSettings` + `NotificationLevel`, `EmulatorProfile` + `DiscoveredEmulator` +
+`DiscoverySource`, `SyncCategories`, `SyncedGame`, `EmulatorStats`, `SyncSummary` +
+`SyncProgress` + `SyncStarted` + `SyncDirection` + `LastSync`, `Conflict` +
+`ConflictResolution`, `PendingOp`, `FileVersion`, `BackupEntry`.
 
 ## Erros
 

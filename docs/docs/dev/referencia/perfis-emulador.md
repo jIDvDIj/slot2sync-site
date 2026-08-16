@@ -7,7 +7,7 @@ Fonte de verdade: `src-tauri/src/emulator/mod.rs`, `profiles.rs` e `profiles.tom
 
 ```rust
 pub struct EmulatorProfile {
-    pub name: String,               // nome canônico, também nome da pasta no Drive
+    pub name: String,               // nome canônico, também nome da pasta no provedor remoto
     pub root_path: PathBuf,         // pasta raiz selecionada pelo usuário
     pub saves_paths: Vec<PathBuf>,     // relativos a root_path
     pub config_paths: Vec<PathBuf>,    // relativos a root_path
@@ -27,7 +27,7 @@ via `include_str!` e parseada uma vez (`OnceLock`). Campos:
 
 | Campo | Uso |
 | --- | --- |
-| `name` | Nome canônico, usado como pasta no Drive. |
+| `name` | Nome canônico, usado como pasta no provedor remoto ativo. |
 | `process_names` | Nomes de processo do SO, para o process watcher. |
 | `base_candidates` | Candidatos a "base" relativos à raiz — o primeiro que existir é usado. Vazio = a própria raiz. |
 | `required` | Pastas que TODAS precisam existir sob a base (E lógico). |

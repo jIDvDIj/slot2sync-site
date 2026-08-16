@@ -39,19 +39,23 @@ A comunicação acontece exclusivamente pela **boundary do Tauri**: comandos
 │  │   │secrets │   │ fila offline        │   │    status        │   │        │
 │  │   └────────┘   └──────┬──────┬───────┘   └──────────────────┘   │        │
 │  │                       │      │                                  │        │
-│  │              ┌────────▼─┐  ┌─▼─────────┐   ┌───────────────┐    │        │
-│  │              │  drive   │  │  storage  │   │   emulator    │    │        │
-│  │              │ reqwest  │  │ rusqlite  │   │  profiles.toml│    │        │
-│  │              │ retry/   │  │ manifest, │   │  + discovery  │    │        │
-│  │              │ backoff  │  │ fila, cfg │   └───────────────┘    │        │
-│  │              └────┬─────┘  └───────────┘                        │        │
+│  │              ┌────────▼─────────┐  ┌─▼─────────┐   ┌───────────────┐   │        │
+│  │              │ remote::Remote-  │  │  storage  │   │   emulator    │   │        │
+│  │              │ Provider (trait) │  │ rusqlite  │   │  profiles.toml│   │        │
+│  │              │ drive/dropbox/   │  │ manifest, │   │  + discovery  │   │        │
+│  │              │ onedrive/folder  │  │ fila, cfg │   └───────────────┘   │        │
+│  │              └────┬─────────────┘  └───────────┘                       │        │
 │  └───────────────────┼─────────────────────────────────────────────┘        │
-│                      │ HTTPS                                                │
+│                      │ HTTPS (ou I/O local, no provedor de pasta)            │
 └──────────────────────┼───────────────────────────────────────────────────────┘
                        ▼
-              Google Drive API v3
+     Google Drive API v3 / Dropbox API v2 / Microsoft Graph / pasta local
         Slot2Sync/ ─ <Emulador>/ ─ {saves,savestates,config}/ ─ sync_manifest.json
 ```
+
+O `SyncEngine` nunca fala diretamente com uma API de nuvem — só com o trait
+`remote::RemoteProvider`, implementado por cada um dos quatro provedores concretos. Detalhes
+em [Provedores de storage](./provedores-de-storage.md).
 
 ## Fluxo de dados de um sync
 
@@ -62,18 +66,18 @@ gatilho ──▶ SyncEngine.sync_*()
                 ├─ 2. storage: lista emuladores configurados (categorias/exclusões aplicadas)
                 │
                 └─ para cada emulador, para cada categoria habilitada:
-                     ├─ 3. drive.ensure_category_folder() .. cria/acha pasta no Drive
-                     ├─ 4. drive.list_tree() ............... estado remoto
+                     ├─ 3. remote.ensure_category_folder() . cria/acha pasta no provedor ativo
+                     ├─ 4. remote.list_tree() ............... estado remoto
                      ├─ 5. diff.scan_local_bases() ......... estado local (disco, com hash)
                      ├─ 6. storage.manifest.list() ......... estado do último sync
                      ├─ 7. diff.build_plan() ............... une os 3 + conflict.decide()
                      └─ 8. executa o plano (concorrência limitada):
-                          ├─ upload / download via drive (retry/backoff, Batch API quando aplicável)
+                          ├─ upload / download via remote (retry/backoff, Batch API no Drive quando aplicável)
                           ├─ atualiza manifest (SQLite)
                           ├─ emite sync:progress
                           └─ falha de rede/arquivo em uso → fila offline
                 │
-                ├─ publica sync_manifest.json no Drive (snapshot de diagnóstico)
+                ├─ publica sync_manifest.json no provedor ativo (snapshot de diagnóstico)
                 └─ emite sync:completed (SyncSummary)
 ```
 
@@ -107,9 +111,10 @@ automáticos (startup/emulator-start/emulator-stop) têm toggle em
 | `constants.rs` | Nomes de pastas do Drive, chaves de segredo, parâmetros de runtime — zero magic strings no resto do código. |
 | `error.rs` | `AppError` unificado, serializado para o frontend como `{ code, message, detail }`. |
 | `state.rs` | `AppState` gerenciado pelo Tauri — handles de `auth`, `db`, `storage` e `engine`. |
-| `auth/` | OAuth2 + PKCE, troca/renovação de token. |
+| `auth/` | OAuth2 + PKCE parametrizado por provedor, troca/renovação de token. |
 | `secrets.rs` | Trait `SecretStore` — abstrai onde o refresh token é guardado (keyring no desktop, storage próprio no mobile). Ver [Autenticação](./autenticacao.md). |
-| `drive/` | Cliente da API do Google Drive v3: retry/backoff, pastas idempotentes, upload/download, Batch API. |
+| `remote/` | Trait `RemoteProvider` (a única porta que o `SyncEngine` conhece), tipos genéricos e transporte HTTP com retry/backoff compartilhado pelos provedores OAuth. Ver [Provedores de storage](./provedores-de-storage.md). |
+| `drive/`, `dropbox/`, `onedrive/`, `folder/` | Implementações concretas de `RemoteProvider`: API do Google Drive v3, API v2 do Dropbox, Microsoft Graph, e leitura/escrita direta numa pasta local/de rede. |
 | `emulator/` | Catálogo declarativo de perfis (`profiles.toml`) e detecção/descoberta automática. Ver [Referência — Perfis de emulador](../referencia/perfis-emulador.md). |
 | `storage/` | SQLite: manifest de sync, fila offline, emuladores configurados, conflitos, estatísticas, cache de pastas do Drive. |
 | `sync/` | `SyncEngine`: diff, resolução de conflito, orquestração das transferências, abstração de storage local (`LocalStorage`/`FileLoc`, desktop e mobile). |
@@ -123,9 +128,11 @@ O frontend (`src/`) segue o mesmo princípio: componentes de tela ficam em `comp
 lógica de busca/estado por assunto em `hooks/` (um hook por domínio — auth, emuladores,
 configurações, eventos de sync, etc.), e toda chamada `invoke` passa por `lib/ipc.ts`.
 
-## Estrutura no Google Drive
+## Estrutura remota
 
-Criada automaticamente, de forma idempotente, com escopo `drive.file`:
+Criada automaticamente, de forma idempotente, com escopo restrito ao próprio app (`drive.file`
+no Drive; App Folder no Dropbox; pasta especial `approot` no OneDrive) — o mesmo layout lógico
+vale para os quatro provedores, só muda como cada um materializa "pasta":
 
 ```
 Slot2Sync/
@@ -135,6 +142,9 @@ Slot2Sync/
 │   └── config/
 └── sync_manifest.json   ← snapshot do estado de sync (diagnóstico/bootstrap)
 ```
+
+No provedor de pasta local/de rede, isso é literalmente essa árvore de diretórios dentro do
+caminho escolhido pelo usuário — sem API nenhuma envolvida.
 
 > A **fonte de verdade operacional** do manifest é a tabela SQLite local. O
 > `sync_manifest.json` é um snapshot exportado a cada sync. Veja

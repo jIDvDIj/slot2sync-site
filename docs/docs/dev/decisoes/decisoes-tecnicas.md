@@ -405,3 +405,44 @@ da documentação) mostrou o risco — daí os testes de serialização e a cent
 arquivo só de cada lado. A boundary cresceu bastante desde então (dezenas de comandos hoje);
 a decisão de migrar ou não para geração automática está registrada, em aberto, em
 [Geração automática da boundary IPC](./geracao-automatica-ipc.md).
+
+## Storage remoto generalizado atrás de um trait (`RemoteProvider`)
+
+**Contexto**: o `SyncEngine` dependia de `DriveApi`, um trait já existente mas pensado só para
+permitir mockar o Drive em teste — todo o resto do núcleo (schema do manifest, struct de
+conflito, fluxo OAuth) assumia Google Drive como único backend possível, com nomes de
+campo/coluna literalmente prefixados `drive_`.
+
+**Escolha**: generalizar `DriveApi` para `remote::RemoteProvider` (mesmas operações, tipo de
+retorno `RemoteFile` achatado e genérico em vez de aninhar o shape específico do Drive),
+renomear os campos `drive_*` do manifest/conflito para `remote_*` (com migração de schema), e
+parametrizar o `OAuthConfig`/`AuthManager` por provedor em vez de constantes fixas do Google.
+Três novas implementações concretas do trait entraram no mesmo commit: Dropbox, OneDrive e uma
+pasta local/de rede sem OAuth nenhum. Detalhes em
+[Provedores de storage](../explicacao/provedores-de-storage.md).
+
+**Justificativa**: a alternativa — deixar o Drive hardcoded e reabrir esse mesmo trabalho de
+generalização quando um segundo provedor fosse pedido — teria custo maior depois do que agora,
+porque o acoplamento só cresce (mais telas, mais campos, mais lugares citando "Drive"
+explicitamente). Como o trait de injeção de dependência para teste já existia, generalizá-lo
+era estrutural, não uma reescrita: o `DriveClient` continuou implementando o trait sem mudança
+de comportamento, só de forma.
+
+## Dropbox/OneDrive prontos no backend, desativados na UI até terem credenciais
+
+**Contexto**: depois de implementar e testar os clientes Dropbox/OneDrive por completo, as
+credenciais de produção (App Console do Dropbox, Azure App registrations) ainda não tinham
+sido cadastradas. Deixar os botões clicáveis levaria a um fluxo OAuth que sempre falharia com
+"credenciais não configuradas".
+
+**Escolha**: manter os comandos `connect_dropbox`/`connect_onedrive` registrados na boundary
+(o backend não muda), mas desativar os dois botões no seletor de provedor da tela de login,
+com um rótulo "em breve" — em vez de escondê-los ou de criar uma branch separada sem esse
+código.
+
+**Justificativa**: duas alternativas foram descartadas. Esconder os botões por completo
+jogaria fora a sinalização de que o suporte já existe e está a caminho. Criar uma branch nova
+só com a generalização (sem Dropbox/OneDrive) evitaria qualquer código "desligado" no binário,
+mas descartaria trabalho já pronto e testado só para reaplicá-lo depois — sem ganho real, já
+que os comandos desativados falham graciosamente (erro de credencial ausente) se alguém os
+chamar fora da UI, sem risco de segurança nem de dado corrompido.

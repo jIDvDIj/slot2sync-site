@@ -66,6 +66,11 @@ O `src-tauri/build.rs` injeta essas variáveis em build-time (variáveis do shel
 precedência sobre o `.env`). O escopo OAuth é `drive.file` — o app só enxerga o que ele
 mesmo cria.
 
+Não é preciso configurar nada para testar a **pasta local/de rede** — ela não usa OAuth. Já
+Dropbox (`SLOT2SYNC_DROPBOX_CLIENT_ID`) e OneDrive (`SLOT2SYNC_ONEDRIVE_CLIENT_ID`) têm o
+backend pronto, mas os botões ficam desativados na UI até essas variáveis existirem em
+produção — ver [Provedores de storage](../explicacao/provedores-de-storage.md).
+
 > Passo a passo completo do fluxo PKCE, armazenamento de tokens e o proxy Cloudflare Worker
 > usado em produção: [Autenticação](../explicacao/autenticacao.md).
 
@@ -171,8 +176,9 @@ src-tauri/src/        # Backend Rust — TODA a lógica de negócio
 ├── constants.rs      # Pastas do Drive, chaves keyring, triggers (sem magic strings)
 ├── secrets.rs        # Trait SecretStore: KeyringStore (desktop) / SqliteSecretStore (mobile)
 ├── platform/         # Código exclusivo por plataforma (tray, watcher, autostart vs. init mobile)
-├── auth/             # OAuth2 + PKCE, refresh automático de token
-├── drive/             # Cliente Google Drive API (reqwest + retry/backoff)
+├── auth/             # OAuth2 + PKCE parametrizado por provedor, refresh automático de token
+├── remote/            # Trait RemoteProvider + tipos genéricos (todo provedor implementa isto)
+├── drive/, dropbox/, onedrive/, folder/  # Implementações concretas de RemoteProvider
 ├── emulator/          # Perfis declarativos (profiles.toml) + detecção
 ├── storage/            # SQLite: manifest, fila offline, emuladores, settings, conflicts
 ├── sync/               # SyncEngine (diff, conflitos, upload/download) sobre a trait LocalStorage

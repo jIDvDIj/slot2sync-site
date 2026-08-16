@@ -26,8 +26,19 @@ reflete o estado atual; aqui só entra o que ainda falta.
   que excedem o limite clássico de 260 caracteres.
 - Checagem de symlink traversal nas pastas monitoradas (segurança: um symlink dentro de uma
   pasta de save não deveria permitir sincronizar arquivos fora da árvore esperada).
-- Testes de integração com `DriveApi` mockável, para cobrir cenários de rede sem depender de
-  credenciais reais.
+- Testes de integração contra as APIs reais dos provedores (feature `integration-tests`, hoje
+  vazia) — os cenários com `RemoteProvider` mockável (`MockDrive`) já cobrem a lógica de sync
+  sem rede; o que falta é validar contra as APIs de verdade.
+
+## Provedores de storage
+
+- Cadastrar credenciais de produção do Dropbox (App Console) e do OneDrive (Azure App
+  registrations) e habilitar os dois botões hoje desativados na tela de login — o backend já
+  está implementado e testado, falta só o cadastro externo. Ver
+  [Provedores de storage](./explicacao/provedores-de-storage.md).
+- Upload em sessão/chunks para Dropbox e OneDrive — hoje os dois só sobem arquivo inteiro de
+  uma vez, com o limite de upload simples de cada API (150 MB no Dropbox, 4 MB no OneDrive);
+  savestates grandes podem exceder esse limite, especialmente no OneDrive.
 
 ## Distribuição pública
 

@@ -11,24 +11,27 @@ no manifest do último sync bem-sucedido:
 
 1. **Sem manifest (primeiro sync do arquivo)** — o mtime ainda não é evidência confiável de
    "qual versão vale mais": um save recém-criado num dispositivo novo tem mtime de hoje, mas
-   pode valer muito menos que um save antigo com 100h de progresso no Drive. Por isso, **o
-   Drive sempre vence** quando os dois lados já existem e diferem — mas só depois de o arquivo
-   local ser copiado para uma pasta de backup (`<dados do app>/backups/<emulador>/<timestamp>/`).
-   O backup roda **antes** do download e, se falhar, o download não acontece — nunca há
-   sobrescrita sem rede de segurança.
+   pode valer muito menos que um save antigo com 100h de progresso no provedor remoto. Por
+   isso, **o remoto sempre vence** quando os dois lados já existem e diferem — mas só depois
+   de o arquivo local ser copiado para uma pasta de backup
+   (`<dados do app>/backups/<emulador>/<timestamp>/`). O backup roda **antes** do download e,
+   se falhar, o download não acontece — nunca há sobrescrita sem rede de segurança.
 2. **Com manifest, só um lado mudou** — vence quem mudou (upload se foi o local, download se
-   foi o Drive). Comparação por mtime com tolerância de ±2s (absorve granularidade de
-   filesystem e pequenos desvios de relógio); o par de mtimes `(local, drive)` registrado no
+   foi o remoto). Comparação por mtime com tolerância de ±2s (absorve granularidade de
+   filesystem e pequenos desvios de relógio); o par de mtimes `(local, remoto)` registrado no
    manifest é o que permite distinguir "nada mudou" de "mudou de um lado" mesmo quando os
    relógios das duas máquinas divergem.
 3. **Com manifest, os dois lados mudaram** — conflito real. O Slot2Sync não escolhe sozinho:
    registra o conflito, **bloqueia o sync daquele emulador** (os demais continuam normais) e
    notifica o usuário. O card do emulador mostra um botão que abre um modal com os dois lados
-   (data, tamanho, dispositivo de origem — todo upload marca `appProperties.device` no arquivo
-   do Drive, então dá para saber exatamente qual máquina gravou qual versão). O usuário escolhe
-   `local` ou `drive`; ao manter o Drive, o local preterido vai para backup antes de ser
-   sobrescrito; ao manter o local, a versão do Drive é sobrescrita sem backup do Slot2Sync
-   (conta com o histórico de revisões do próprio Drive como rede de segurança).
+   (data, tamanho, dispositivo de origem — todo upload marca a origem no arquivo remoto, então
+   dá para saber exatamente qual máquina gravou qual versão; no Drive isso é uma
+   `appProperties` nativa, nos demais provedores um índice-sidecar — ver
+   [Provedores de storage](./provedores-de-storage.md#atribuicao-de-dispositivo-sem-appproperties)).
+   O usuário escolhe `local` ou `remote`; ao manter o remoto, o local preterido vai para backup
+   antes de ser sobrescrito; ao manter o local, a versão remota é sobrescrita sem backup do
+   Slot2Sync (conta com o histórico de revisões do próprio provedor, quando ele tiver um, como
+   rede de segurança).
 
 Sobrescrever sem perguntar é justamente o que as duas primeiras versões do Slot2Sync faziam
 por padrão (comparar mtime bruto), e cada uma perdeu saves de verdade — daí o backup automático
@@ -38,9 +41,11 @@ decisão, não como exceções.
 ## Identidade estável do dispositivo
 
 Antes de existir um `device_id` estável (gravado no keyring do SO), dois dispositivos que nunca
-tinham sincronizado entre si podiam ter seus saves independentes tratados como "Drive vence" no
-primeiro sync, quando deveriam gerar conflito explícito. O `device_id` (UUID) é o que permite
-`appProperties.device` identificar a origem real de cada versão, mesmo sem manifest prévio.
+tinham sincronizado entre si podiam ter seus saves independentes tratados como "o remoto vence"
+no primeiro sync, quando deveriam gerar conflito explícito. O `device_id` (UUID) é o que
+permite identificar a origem real de cada versão mesmo sem manifest prévio — gravado como
+`appProperties.deviceId` no Drive, ou na entrada correspondente do índice-sidecar nos demais
+provedores.
 
 ## Núcleo agnóstico a emulador (`SyncTarget`)
 
@@ -51,7 +56,7 @@ conversão, sem tocar o diff nem a resolução de conflito.
 
 ## Estado local: manifest e fila offline
 
-O manifest (`sync_manifest` no SQLite) guarda, por arquivo, o `drive_file_id`, os mtimes dos
+O manifest (`sync_manifest` no SQLite) guarda, por arquivo, o `remote_file_id`, os mtimes dos
 dois lados no último sync, o tamanho e um **hash SHA-256 do conteúdo**. O hash serve de
 pré-filtro: se o mtime local mudou mas o hash bate com o do manifest, o arquivo é só
 "reancorado" (mtime atualizado no manifest) sem re-upload — evita transferir de novo um arquivo
@@ -65,16 +70,18 @@ reativa. A fila guarda **intenção, não um replay de comando**: o próximo syn
 a diferença pelo diff (a fonte da verdade) e refaz a operação, o que a torna imune a reexecutar
 uma operação que já ficou obsoleta.
 
-## Cliente Drive
+## Cliente remoto
 
-Toda chamada à API passa por um transporte único com retry (renova token em 401, aguarda e
-retenta em 429/5xx/falha de rede, backoff exponencial com jitter). Uploads pequenos e novos
-(sem entrada prévia no manifest) são agrupados via **Batch API** do Drive para reduzir o número
-de requisições num sync inicial de coleção grande; o que não é elegível para lote, ou o que o
-lote falha, segue pelo caminho de upload individual. Uploads preservam o mtime original;
-downloads gravam em arquivo temporário e fazem `rename` atômico, depois aplicam o `modifiedTime`
-do Drive como mtime local — um save nunca fica corrompido por uma queda no meio da escrita.
-**Não existe operação de delete** — o sync nunca apaga nada no Drive.
+Toda chamada de um provedor OAuth (Drive/Dropbox/OneDrive) passa por um transporte único com
+retry compartilhado em `remote::http` (renova token em 401, aguarda e retenta em 429/5xx/falha
+de rede, backoff exponencial com jitter). No Drive, uploads pequenos e novos (sem entrada
+prévia no manifest) são agrupados via **Batch API** para reduzir o número de requisições num
+sync inicial de coleção grande — otimização específica do Drive; os demais provedores sobem
+arquivo a arquivo. O que não é elegível para lote, ou o que o lote falha, segue pelo caminho
+de upload individual. Uploads preservam o mtime original; downloads gravam em arquivo
+temporário e fazem `rename` atômico, depois aplicam o mtime remoto como mtime local — um save
+nunca fica corrompido por uma queda no meio da escrita. **Não existe operação de delete** — o
+sync nunca apaga nada no provedor remoto.
 
 Detalhes de schema e API em [Referência — Boundary IPC](../referencia/boundary-ipc.md).
 Contexto de por que a resolução é por timestamp (e não por hash de conteúdo desde o início) em

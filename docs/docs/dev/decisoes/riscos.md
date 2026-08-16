@@ -25,10 +25,11 @@ problema dobra. Tudo é comparado em UTC (epoch ms), com tolerância de ±2s. O 
 com skew maior que a tolerância. Como o sync nunca deleta, o pior caso é sobrescrita de um
 save antigo no lado perdedor — recuperável pelo histórico de revisões do Drive.
 
-### 2. Rate limits da API do Drive
-`send_with_retry` aplica backoff exponencial com jitter, tratando 429, 403 *RateLimitExceeded*
-e 5xx. A concorrência de transferências é limitada. O diff pelo manifest local evita
-listar/baixar o que não mudou.
+### 2. Rate limits das APIs de provedor remoto
+`remote::http::send_with_retry` (transporte compartilhado por Drive/Dropbox/OneDrive) aplica
+backoff exponencial com jitter, tratando 429 e 5xx genericamente; o Drive soma uma regra extra
+para 403 *RateLimitExceeded*, específica da API dele. A concorrência de transferências é
+limitada. O diff pelo manifest local evita listar/baixar o que não mudou.
 
 ### 3. Arquivo em uso no momento do sync
 Ao fechar o emulador, ele pode ainda estar gravando o save (ou um savestate grande). Antes

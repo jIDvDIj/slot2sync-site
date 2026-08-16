@@ -2,7 +2,8 @@
 
 Documentação técnica do Slot2Sync — aplicação desktop (Tauri v2 + Rust + React/TS)
 que sincroniza automaticamente saves, savestates e configurações de emuladores de
-retrogames com o Google Drive.
+retrogames com um provedor de storage remoto (Google Drive hoje; Dropbox e OneDrive
+implementados e em preparação — ver [Provedores de storage](./explicacao/provedores-de-storage.md)).
 
 Organizada pelo framework [Diátaxis](https://diataxis.fr/): tutoriais ensinam fazendo,
 guias resolvem uma tarefa específica, referências respondem "o que é X", explicações
@@ -41,7 +42,8 @@ Para a visão geral do produto e os objetivos que guiam as decisões de projeto,
 | Documento | Conteúdo |
 | --- | --- |
 | [Arquitetura](./explicacao/arquitetura.md) | Visão geral, diagrama de componentes, fluxo de dados de um sync, módulos do backend |
-| [Autenticação](./explicacao/autenticacao.md) | PKCE, proxy Cloudflare Worker, fluxo desktop e mobile, armazenamento de tokens |
+| [Provedores de storage](./explicacao/provedores-de-storage.md) | Trait `RemoteProvider`, os quatro provedores concretos, atribuição de dispositivo sem `appProperties` |
+| [Autenticação](./explicacao/autenticacao.md) | PKCE parametrizado por provedor, proxy Cloudflare Worker, fluxo desktop e mobile, armazenamento de tokens |
 | [Sincronização e conflitos](./explicacao/sincronizacao-e-conflitos.md) | Motor de decisão do sync: sem manifest, com manifest, conflito explícito |
 | [Configurações](./explicacao/configuracoes.md) | Nome do dispositivo, categorias por emulador, gatilhos automáticos, notificações, backup, banda |
 | [Monitoramento de processos](./explicacao/monitoramento-processos.md) | Process watcher, debounce assimétrico, máquina de estados |
