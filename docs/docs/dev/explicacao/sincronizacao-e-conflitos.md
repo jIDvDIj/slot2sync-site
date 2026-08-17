@@ -68,7 +68,21 @@ offline (`pending_ops`) com backoff exponencial (30s × 2^tentativas, teto de 1h
 abandonada como "morta" depois de várias tentativas — só a ação "tentar novamente" da UI a
 reativa. A fila guarda **intenção, não um replay de comando**: o próximo sync sempre re-detecta
 a diferença pelo diff (a fonte da verdade) e refaz a operação, o que a torna imune a reexecutar
-uma operação que já ficou obsoleta.
+uma operação que já ficou obsoleta. A UI também pode marcar uma pendência como prioritária
+("mover para frente da fila"): zera o backoff e a lista primeiro, mas quem decide se ela
+realmente sobe/desce continua sendo o diff do próximo sync, não a fila.
+
+Um caso específico de falha tem tratamento à parte: se o upload esbarra em
+`PermissionDenied`/`WouldBlock` porque o emulador segura o arquivo aberto (trava exclusiva do
+Windows, mais comum ali que em Unix), a entrada não entra no backoff exponencial — vira a flag
+`inaccessible` no próprio manifest. O motivo é que o watcher de filesystem já vai disparar um
+resync assim que o emulador soltar o arquivo, então esperar em fila com backoff é redundante e
+só atrasa a recuperação.
+
+`sync_manifest` também carrega um bitmask `flags` (conflito/pendência/…) como índice
+secundário best-effort para consulta rápida — as tabelas `sync_conflicts`/`pending_ops`
+continuam sendo a fonte de verdade; a flag some silenciosamente se ainda não existir uma linha
+de manifest para aquele arquivo.
 
 ## Cliente remoto
 
@@ -82,6 +96,61 @@ de upload individual. Uploads preservam o mtime original; downloads gravam em ar
 temporário e fazem `rename` atômico, depois aplicam o mtime remoto como mtime local — um save
 nunca fica corrompido por uma queda no meio da escrita. **Não existe operação de delete** — o
 sync nunca apaga nada no provedor remoto.
+
+A listagem recursiva de uma pasta de categoria (`list_tree`) fica em cache por 30s no
+`DriveClient`, invalidado por inteiro após qualquer upload/rename — evita relistar a mesma
+pasta quando dois gatilhos de sync (ex.: watcher logo depois de um sync manual) caem dentro da
+mesma janela sem nada ter mudado.
+
+## Concorrência: dois tetos independentes
+
+As transferências de uma categoria rodam concorrentes, mas sob dois limites que não competem
+entre si: um semáforo ponderado por **bytes em trânsito** (64 MiB no total; um savestate de
+500 MB reserva proporcionalmente mais do que um save de 1 KB, em vez de ocupar a mesma "vaga"
+de contagem) e dois semáforos separados para **chamadas de rede** (4 simultâneas) e **I/O de
+disco local** (2 simultâneas) — em HD mecânico, escrita paralela demais vira thrashing de
+cabeça de leitura/escrita, então o teto de disco é deliberadamente mais baixo que o de rede. O
+cálculo de hash SHA-256 do pré-filtro de mtime roda em paralelo (rayon) quando várias entradas
+tocadas precisam ser rehasheadas na mesma categoria.
+
+## Robustez da escrita local
+
+`write_atomic` (grava num arquivo temporário e faz `rename` sobre o destino) tem camadas de
+proteção acumuladas: `fsync` do conteúdo antes do rename e do diretório-pai depois (Unix,
+best-effort) para sobreviver a uma queda bem no meio da operação; preserva as permissões do
+arquivo substituído em vez de cair no padrão do processo; recusa escrever se o destino ou sua
+pasta-pai imediata já forem um symlink (protege contra um link plantado ali redirecionando a
+escrita para fora da árvore esperada — não sobe além do pai imediato, para não quebrar quem
+symlinka a raiz do emulador inteira de propósito); no Windows, prefixa caminhos absolutos com
+`\\?\` (`\\?\UNC\` em compartilhamentos de rede) para não estourar o `MAX_PATH` de 260
+caracteres em coleções profundamente aninhadas, e recusa sobrescrever um arquivo cujo nome
+existente difere só em maiúsculas/minúsculas do que está chegando (NTFS é case-preserving mas
+case-insensitive — dois arquivos "distintos" pro motor de sync colidiriam ali).
+
+O nome do arquivo temporário segue a convenção de cada SO (`~slot2sync~` no Windows, `.` inicial
+no Unix) em vez de um sufixo único — nomes muito longos viram um hash curto do nome original
+para não estourar limite de caminho por conta própria. No início de cada sync, uma varredura
+best-effort remove temporários órfãos com mais de 24h (resto de um download interrompido por
+uma queda do app). Se a raiz do emulador não existe mais como pasta (drive removível
+desconectado, pasta de rede fora do ar), o scan falha cedo com um erro dedicado em vez de
+tratar a ausência como "tudo foi apagado localmente" e tentar rebaixar a coleção inteira de
+volta para dentro do que seria o ponto de montagem.
+
+## Estado observável: `SyncState` e progresso
+
+Além dos eventos discretos (`sync:started`/`progress`/`completed`/`conflict`/`error`), o motor
+mantém um `SyncState` corrente (`Idle`/`Scanning`/`Syncing`/`Conflict`/`Error`) e emite
+`sync:state-changed` a cada transição; `get_sync_state` expõe um retrato para a UI renderizar o
+estado certo ao montar, sem depender de ter visto os eventos anteriores (reconectar no meio de
+um sync). `Conflict`/`Error` são transições momentâneas — um conflito ou falha num emulador não
+trava o `sync_all`, que segue para os demais e volta a `Idle` só quando a leva inteira termina.
+Os últimos 100 erros de sync ficam num histórico em memória (`get_recent_errors`), perdido a
+cada reinício.
+
+O progresso por categoria não emite mais um evento por arquivo — um `tokio::time::interval` de
+500ms lê os contadores atômicos e emite um retrato consolidado só quando o valor mudou, com uma
+emissão final garantida (`completed == total`) ao fim das transferências. Evita inundar o
+frontend num sync de centenas de arquivos.
 
 Detalhes de schema e API em [Referência — Boundary IPC](../referencia/boundary-ipc.md).
 Contexto de por que a resolução é por timestamp (e não por hash de conteúdo desde o início) em

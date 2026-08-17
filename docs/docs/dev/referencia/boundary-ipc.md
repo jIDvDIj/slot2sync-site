@@ -19,7 +19,11 @@ Comandos marcados **mobile-only** têm uma variante desktop que sempre retorna e
 
 | Comando | Retorno | Descrição |
 | --- | --- | --- |
-| `health_check` | `HealthStatus` | Verificação mínima de que a boundary está funcional; inclui `isMobile`. |
+| `health_check` | `HealthStatus` | Verificação mínima de que a boundary está funcional; inclui `isMobile`, `dbSizeBytes` (via `dbstat`) e `pendingOpsCount`, para a UI sinalizar um banco anormalmente grande ou uma fila offline parada. |
+| `get_sync_state` | `SyncStateSnapshot` | Estado corrente do sync (`idle`/`scanning`/`syncing`/`conflict`/`error`) — para a UI renderizar o estado certo ao montar, sem depender de eventos anteriores perdidos. |
+| `get_recent_errors` | `Vec<ErrorEntry>` | Histórico dos últimos 100 erros de sync em memória (perdido a cada reinício), mais antigo primeiro. |
+| `clear_errors` | `void` | Esvazia o histórico de erros em memória. |
+| `export_diagnostics` **desktop** | `String` | Gera um `.zip` de diagnóstico na pasta de Downloads (configurações com segredos redigidos, manifest, conflitos, fila offline, info do app, final do log de hoje). Retorna o caminho gerado. |
 
 ### Autenticação e provedor de storage
 
@@ -65,8 +69,9 @@ ponta, mas ficam sem botão acessível na UI até terem credenciais de produçã
 | `get_last_sync` | `Option<LastSync>` | Último sync concluído nesta execução do app. |
 | `list_conflicts` | `Vec<Conflict>` | Conflitos pendentes (ambos os lados mudaram desde o último sync). |
 | `resolve_conflict` | `void` | Resolve um conflito mantendo `local` ou `remote`; desbloqueia o sync do emulador. |
-| `list_pending_ops` | `Vec<PendingOp>` | Fila offline visível: arquivos cuja transferência falhou e será refeita. |
+| `list_pending_ops` | `Vec<PendingOp>` | Fila offline visível: arquivos cuja transferência falhou e será refeita. Prioritárias listadas primeiro. |
 | `retry_pending_op` | `void` | Zera tentativas/backoff de uma pendência (inclusive mortas), liberando retry no próximo sync. |
+| `bump_pending_op` | `void` | Marca a pendência como prioritária ("mover para frente da fila") e libera o backoff — mesmo efeito imediato de `retry_pending_op`, mais a marca persistida. |
 
 ### Categorias e exclusões por emulador
 
@@ -112,10 +117,11 @@ ponta, mas ficam sem botão acessível na UI até terem credenciais de produçã
 | Evento | Payload | Quando dispara |
 | --- | --- | --- |
 | `sync:started` | `SyncStarted` | Início de um sync (qualquer gatilho). |
-| `sync:progress` | `SyncProgress` | A cada arquivo transferido, com bytes acumulados da categoria em andamento. |
+| `sync:progress` | `SyncProgress` | Retrato consolidado do progresso da categoria em andamento, a cada 500ms (não mais por arquivo) — mais uma emissão final garantida com `completed == total`. |
 | `sync:completed` | `SyncSummary` | Fim de um sync bem-sucedido. |
 | `sync:error` | `SyncErrorEvent` | Erro que interrompeu o sync. `emulator: null` = erro geral, não específico de um emulador. |
 | `sync:conflict` | `Conflict` | Conflito detectado (ambos os lados mudaram). |
+| `sync:state-changed` | `SyncStateChangedEvent` | Transição do `SyncState` do motor. `Conflict`/`Error` são momentâneos — o `sync_all` segue para os demais emuladores e volta a `idle` só ao fim da leva. |
 | `auth:status` | `AuthStatus` | Após `connect_google_drive`/`connect_dropbox`/`connect_onedrive`/`disconnect_provider`. |
 | `emulator:status` | `EmulatorStatusEvent` | Emulador monitorado abriu ou fechou (process watcher). |
 
@@ -128,7 +134,8 @@ ativo — ver [Provedores de storage](../explicacao/provedores-de-storage.md)), 
 `TriggerSettings` + `NotificationLevel`, `EmulatorProfile` + `DiscoveredEmulator` +
 `DiscoverySource`, `SyncCategories`, `SyncedGame`, `EmulatorStats`, `SyncSummary` +
 `SyncProgress` + `SyncStarted` + `SyncDirection` + `LastSync`, `Conflict` +
-`ConflictResolution`, `PendingOp`, `FileVersion`, `BackupEntry`.
+`ConflictResolution`, `PendingOp` (inclui `priority`), `FileVersion`, `BackupEntry`,
+`SyncStateSnapshot` + `SyncStateChangedEvent` + `SyncStateKind`, `ErrorEntry`.
 
 ## Erros
 

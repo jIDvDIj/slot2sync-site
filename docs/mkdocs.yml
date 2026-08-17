@@ -55,6 +55,7 @@ nav:
           - Provedores de storage: dev/explicacao/provedores-de-storage.md
           - Autenticação: dev/explicacao/autenticacao.md
           - Sincronização e conflitos: dev/explicacao/sincronizacao-e-conflitos.md
+          - Armazenamento local: dev/explicacao/armazenamento-local.md
           - Configurações: dev/explicacao/configuracoes.md
           - Monitoramento de processos: dev/explicacao/monitoramento-processos.md
           - UI e system tray: dev/explicacao/ui-e-tray.md
