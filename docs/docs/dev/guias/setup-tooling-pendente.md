@@ -2,8 +2,11 @@
 
 Já configurado e funcionando: hook de validação de mensagem de commit, release notes
 automáticas, script de `AUTHORS`/`.mailmap`, lint e extração de i18n, builds
-reproduzíveis (`SOURCE_DATE_EPOCH`), cobertura de testes (Codecov) e verificação de
-licenças (`cargo-deny`). Os passos abaixo são o que ainda exige ação manual.
+reproduzíveis (`SOURCE_DATE_EPOCH`), cobertura de testes (Codecov), verificação de
+licenças (`cargo-deny`) e atestação de proveniência SLSA dos instaladores publicados
+(`attest-build-provenance`, viável com o repositório público — ver
+[Distribuição e confiança](../explicacao/distribuicao-e-confianca.md)). Os passos abaixo
+são o que ainda exige ação manual.
 
 ## Rodar `npm install` no Windows depois de puxar uma dependência nova
 
@@ -92,6 +95,5 @@ transitivo via `plist`/`tauri-winrt-notification`, sem correção possível por
 ## Itens sem data prevista
 
 Ver [roadmap](../roadmap.md) para: drop de privilégios no startup (Windows), seção
-"Sobre" no `SettingsModal`, `THIRD_PARTY_LICENSES.txt` no instalador, SLSA provenance
-(bloqueado por repo privado) e assinatura/notarização macOS (falta certificado Apple
-Developer).
+"Sobre" no `SettingsModal`, `THIRD_PARTY_LICENSES.txt` no instalador e
+assinatura/notarização macOS (falta certificado Apple Developer).
