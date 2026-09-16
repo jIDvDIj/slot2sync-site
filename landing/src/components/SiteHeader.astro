@@ -1,0 +1,90 @@
+---
+import Icon from './Icon.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<header class="site-header">
+  <div class="container site-header-inner">
+    <a class="brand" href={base}>
+      <img src={`${base}favicon.svg`} alt="" width="28" height="28" />
+      <span>Slot2Sync</span>
+    </a>
+    <nav class="site-nav">
+      <a href="#features">Recursos</a>
+      <a href="#emulators">Emuladores</a>
+      <a href="#download">Baixar</a>
+      <a href={`${base}docs/`}>Documentação</a>
+      <a class="icon-link" href="https://github.com/jIDvDIj/slot2sync" aria-label="Código-fonte no GitHub">
+        <Icon name="external" size={18} />
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-glass);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+    box-shadow: 0 1px 0 var(--color-separator);
+  }
+
+  .site-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    height: 64px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--color-label);
+    text-decoration: none;
+  }
+
+  .brand img {
+    border-radius: 6px;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    flex-wrap: wrap;
+  }
+
+  .site-nav a:not(.icon-link) {
+    color: var(--color-label-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .site-nav a:not(.icon-link):hover {
+    color: var(--color-label);
+  }
+
+  .icon-link {
+    display: inline-flex;
+    color: var(--color-label-secondary);
+  }
+
+  .icon-link:hover {
+    color: var(--color-label);
+  }
+
+  @media (max-width: 640px) {
+    .site-nav a:not(.icon-link, [href$="/docs/"]) {
+      display: none;
+    }
+  }
+</style>

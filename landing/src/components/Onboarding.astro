@@ -1,0 +1,70 @@
+---
+const steps = [
+  {
+    title: 'Conecte sua conta',
+    text: 'Google Drive, Dropbox ou uma pasta local — um clique, e pronto.',
+  },
+  {
+    title: 'Aponte a pasta do emulador',
+    text: 'O Slot2Sync reconhece sozinho qual emulador é e onde ficam os saves.',
+  },
+  {
+    title: 'Esqueça que ele existe',
+    text: 'Tudo acontece na bandeja do sistema, nos momentos certos — sem abrir o app de novo.',
+  },
+];
+---
+
+<section class="onboarding">
+  <div class="container">
+    <p class="eyebrow">Como funciona</p>
+    <h2>Três passos e esquece que ele existe</h2>
+    <ol class="grid grid-3">
+      {
+        steps.map((step, i) => (
+          <li class="card step">
+            <span class="step-number">{i + 1}</span>
+            <h3>{step.title}</h3>
+            <p class="muted">{step.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .onboarding ol {
+    list-style: none;
+    margin: var(--space-8) 0 0;
+    padding: 0;
+  }
+
+  .step {
+    position: relative;
+    padding-top: var(--space-8);
+  }
+
+  .step p {
+    margin: 0;
+  }
+
+  .step-number {
+    position: absolute;
+    top: var(--space-5);
+    left: var(--space-6);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .step h3 {
+    margin-top: var(--space-6);
+  }
+</style>

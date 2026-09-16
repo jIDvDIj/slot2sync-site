@@ -1,18 +1,32 @@
-<section class="emulators">
+---
+import Icon from './Icon.astro';
+
+const emulators = [
+  { name: 'PPSSPP', system: 'PlayStation Portable' },
+  { name: 'PCSX2', system: 'PlayStation 2' },
+];
+---
+
+<section class="emulators" id="emulators">
   <div class="container">
     <p class="eyebrow">Emuladores suportados</p>
     <h2>Feito para crescer</h2>
     <div class="grid grid-2">
-      <div class="card">
-        <h3>PPSSPP</h3>
-        <p>PlayStation Portable</p>
-      </div>
-      <div class="card">
-        <h3>PCSX2</h3>
-        <p>PlayStation 2</p>
-      </div>
+      {
+        emulators.map((e) => (
+          <div class="card emulator-card">
+            <span class="emulator-icon">
+              <Icon name="laptop" size={26} />
+            </span>
+            <div>
+              <h3>{e.name}</h3>
+              <p class="muted">{e.system}</p>
+            </div>
+          </div>
+        ))
+      }
     </div>
-    <p class="note">
+    <p class="note muted">
       A estrutura foi pensada para crescer — novos emuladores podem ser adicionados sem mudar o
       funcionamento do app.
     </p>
@@ -20,13 +34,36 @@
 </section>
 
 <style>
-  .emulators .card p {
-    color: var(--text-muted);
+  .emulators .card {
+    margin-top: var(--space-6);
+  }
+
+  .emulator-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .emulator-card h3 {
+    margin-bottom: 4px;
+  }
+
+  .emulator-card p {
     margin: 0;
   }
 
+  .emulator-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+
   .note {
-    color: var(--text-muted);
-    margin-top: 24px;
+    margin-top: var(--space-6);
   }
 </style>

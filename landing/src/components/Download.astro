@@ -1,41 +1,176 @@
-<section class="download">
-  <div class="container card">
-    <p class="eyebrow">Getting started</p>
-    <h2>Três passos e esquece que ele existe</h2>
-    <ol>
-      <li><strong>Conecte sua conta Google.</strong> Um clique, e pronto.</li>
-      <li>
-        <strong>Aponte a pasta do seu emulador.</strong> O Slot2Sync reconhece sozinho qual emulador
-        é.
-      </li>
-      <li>
-        <strong>Esqueça que ele existe.</strong> Tudo acontece sozinho, na bandeja do sistema, nos
-        momentos certos.
-      </li>
-    </ol>
-    <div class="actions">
-      <a class="btn btn-primary" href="https://github.com/jIDvDIj/slot2sync/releases/latest"
-        >Baixar última versão</a
-      >
-      <a class="btn btn-ghost" href="https://github.com/jIDvDIj/slot2sync">Código-fonte</a>
+---
+import Icon from './Icon.astro';
+
+const REPO = 'jIDvDIj/slot2sync';
+const RELEASES_PAGE = `https://github.com/${REPO}/releases/latest`;
+
+interface Asset {
+  url: string;
+  sizeMb: string;
+}
+
+interface PlatformDownload {
+  os: 'windows' | 'apple' | 'linux';
+  label: string;
+  primary: Asset | null;
+  primaryLabel: string;
+  alternates: { label: string; url: string }[];
+}
+
+/**
+ * Filenames carry the version (`Slot2Sync_0.16.0_x64-setup.exe`), so a fixed
+ * URL would go stale on every release. Reading the real links at build time —
+ * this file only regenerates when the site rebuilds — keeps the buttons on
+ * the actual latest release without a runtime API call.
+ */
+async function fetchLatestRelease(): Promise<{ version: string; assets: { name: string; url: string; sizeMb: string }[] } | null> {
+  try {
+    const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+      headers: { Accept: 'application/vnd.github+json' },
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const assets = (data.assets ?? [])
+      .filter((asset: { name: string }) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json')
+      .map((asset: { name: string; browser_download_url: string; size: number }) => ({
+        name: asset.name,
+        url: asset.browser_download_url,
+        sizeMb: (asset.size / 1_000_000).toFixed(1),
+      }));
+    return { version: (data.tag_name as string).replace(/^app-v/, ''), assets };
+  } catch {
+    return null;
+  }
+}
+
+function find(assets: { name: string; url: string; sizeMb: string }[], suffix: string): Asset | null {
+  const asset = assets.find((a) => a.name.endsWith(suffix));
+  return asset ? { url: asset.url, sizeMb: asset.sizeMb } : null;
+}
+
+const release = await fetchLatestRelease();
+const assets = release?.assets ?? [];
+
+// Falls back to the releases page for any button whose asset isn't found —
+// a renamed or missing file never breaks the button, just its precision.
+const platforms: PlatformDownload[] = [
+  {
+    os: 'windows',
+    label: 'Windows',
+    primary: find(assets, '-setup.exe'),
+    primaryLabel: 'Instalador (.exe)',
+    alternates: [{ label: '.msi', url: find(assets, '.msi')?.url ?? RELEASES_PAGE }],
+  },
+  {
+    os: 'apple',
+    label: 'macOS',
+    primary: find(assets, 'aarch64.dmg'),
+    primaryLabel: 'Apple Silicon (.dmg)',
+    alternates: [{ label: 'Intel', url: find(assets, '_x64.dmg')?.url ?? RELEASES_PAGE }],
+  },
+  {
+    os: 'linux',
+    label: 'Linux',
+    primary: find(assets, '.AppImage'),
+    primaryLabel: 'AppImage',
+    alternates: [
+      { label: '.deb', url: find(assets, 'amd64.deb')?.url ?? RELEASES_PAGE },
+      { label: '.rpm', url: find(assets, '.x86_64.rpm')?.url ?? RELEASES_PAGE },
+    ],
+  },
+];
+---
+
+<section class="download" id="download">
+  <div class="container">
+    <p class="eyebrow">Baixar</p>
+    <h2>Escolha seu sistema</h2>
+    <p class="muted">
+      {release ? <>Versão mais recente: <strong>{release.version}</strong>.</> : 'Baixe direto do GitHub.'}
+      {' '}Os arquivos vêm do próprio repositório — o botão já aponta para o instalador certo.
+    </p>
+
+    <div class="grid grid-3 platforms">
+      {
+        platforms.map((platform) => (
+          <div class="card platform-card">
+            <span class="platform-icon">
+              <Icon name={platform.os} size={30} />
+            </span>
+            <h3>{platform.label}</h3>
+            <a
+              class="btn btn-primary"
+              href={platform.primary?.url ?? RELEASES_PAGE}
+              aria-label={`Baixar Slot2Sync para ${platform.label}`}
+            >
+              <Icon name="download" size={18} />
+              {platform.primaryLabel}
+            </a>
+            <p class="platform-meta muted">{platform.primary ? `${platform.primary.sizeMb} MB` : 'Ver na página de releases'}</p>
+            <p class="platform-alt">
+              {platform.alternates.map((alt, i) => (
+                <>
+                  {i > 0 ? ' · ' : 'também: '}
+                  <a href={alt.url}>{alt.label}</a>
+                </>
+              ))}
+            </p>
+          </div>
+        ))
+      }
     </div>
+
+    <p class="muted all-downloads">
+      Precisa do código-fonte ou quer conferir as assinaturas? <a href={RELEASES_PAGE}>Veja todos os arquivos da versão</a>.
+    </p>
   </div>
 </section>
 
 <style>
-  .download ol {
-    color: var(--text-muted);
-    padding-left: 20px;
+  .platforms {
+    margin-top: var(--space-8);
   }
 
-  .download li + li {
-    margin-top: 8px;
-  }
-
-  .actions {
+  .platform-card {
     display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-top: 24px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-2);
+  }
+
+  .platform-icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--space-1);
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+
+  .platform-card h3 {
+    margin-bottom: var(--space-2);
+  }
+
+  .platform-card .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .platform-meta {
+    margin: var(--space-2) 0 0;
+    font-size: 0.85rem;
+  }
+
+  .platform-alt {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+
+  .all-downloads {
+    margin-top: var(--space-6);
+    text-align: center;
   }
 </style>

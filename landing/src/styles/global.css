@@ -1,14 +1,120 @@
+/*
+ * Design tokens, ported from the app's `src/styles/tokens.css` so the site and
+ * the app read as the same product. Trimmed to what a static page needs (no
+ * control heights, no sidebar/toolbar sizing).
+ */
+
 :root {
-  --bg: #0f0b17;
-  --surface: #1a1523;
-  --surface-2: #241d33;
-  --border: #33293f;
-  --text: #f2eefb;
-  --text-muted: #b8aecb;
-  --accent: #7c5cff;
-  --accent-2: #22d3ee;
-  --radius: 14px;
-  color-scheme: dark;
+  color-scheme: light;
+
+  --font-text:
+    system-ui, BlinkMacSystemFont, "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue",
+    sans-serif;
+  --font-display:
+    system-ui, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Roboto,
+    "Helvetica Neue", sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", "Cascadia Mono", "Cascadia Code", Consolas, "Liberation Mono",
+    monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-control: 10px;
+  --radius-group: 16px;
+  --radius-pill: 999px;
+
+  --ease-spring: cubic-bezier(0.25, 0.9, 0.3, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 140ms;
+  --duration-base: 200ms;
+  --duration-spring: 420ms;
+
+  /* Same sky-to-mint gradient as the app icon. Kept rare on purpose — the hero
+     glow and the download icons are the only places it appears. */
+  --brand-sky: #57b4ea;
+  --brand-periwinkle: #7f8ff0;
+  --brand-mint: #4fb68a;
+  --gradient-brand: linear-gradient(
+    135deg,
+    var(--brand-sky) 0%,
+    var(--brand-periwinkle) 55%,
+    var(--brand-mint) 100%
+  );
+
+  --color-window: #f5f5f7;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+
+  --color-label: #1d1d1f;
+  --color-label-secondary: #57575c;
+  --color-label-tertiary: #7c7c82;
+
+  --color-separator: rgb(0 0 0 / 0.09);
+
+  --color-accent: #0a6bd1;
+  --color-accent-hover: #095fba;
+  --color-on-accent: #ffffff;
+  --color-accent-text: #0a63c2;
+  --color-accent-soft: rgb(10 107 209 / 0.11);
+
+  --color-control: #ffffff;
+  --color-control-hover: #f7f7f9;
+  --color-field-border: rgb(0 0 0 / 0.14);
+
+  --shadow-raised: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.06);
+  --shadow-control: 0 0 0 0.5px rgb(0 0 0 / 0.16), 0 1px 1px rgb(0 0 0 / 0.06);
+  --shadow-dialog:
+    0 0 0 0.5px rgb(0 0 0 / 0.12), 0 4px 14px rgb(0 0 0 / 0.1), 0 24px 64px rgb(0 0 0 / 0.16);
+
+  --color-glass: rgb(245 245 247 / 0.78);
+  --glass-filter: blur(20px) saturate(1.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --brand-sky: #6ec3f0;
+    --brand-periwinkle: #8b9cf2;
+    --brand-mint: #62c29a;
+
+    --color-window: #1c1c1e;
+    --color-surface: #2a2a2d;
+    --color-surface-raised: #303034;
+
+    --color-label: #f2f2f7;
+    --color-label-secondary: #aeaeb4;
+    --color-label-tertiary: #8a8a90;
+
+    --color-separator: rgb(255 255 255 / 0.09);
+
+    --color-accent: #0a70dc;
+    --color-accent-hover: #1a7ce6;
+    --color-on-accent: #ffffff;
+    --color-accent-text: #5eaeff;
+    --color-accent-soft: rgb(64 156 255 / 0.16);
+
+    --color-control: #3a3a3e;
+    --color-control-hover: #434347;
+    --color-field-border: rgb(255 255 255 / 0.14);
+
+    --shadow-raised: 0 0 0 0.5px rgb(255 255 255 / 0.07), 0 1px 3px rgb(0 0 0 / 0.4);
+    --shadow-control: 0 0 0 0.5px rgb(255 255 255 / 0.1), 0 1px 1px rgb(0 0 0 / 0.3);
+    --shadow-dialog:
+      0 0 0 0.5px rgb(255 255 255 / 0.1), 0 4px 14px rgb(0 0 0 / 0.35),
+      0 24px 64px rgb(0 0 0 / 0.5);
+
+    --color-glass: rgb(28 28 30 / 0.78);
+  }
 }
 
 * {
@@ -22,91 +128,133 @@ body {
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family:
-    'Segoe UI',
-    system-ui,
-    -apple-system,
-    sans-serif;
+  background: var(--color-window);
+  color: var(--color-label);
+  font-family: var(--font-text);
+  font-size: 1.0625rem;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-img {
+img,
+svg {
   max-width: 100%;
   display: block;
 }
 
 a {
-  color: var(--accent-2);
+  color: var(--color-accent-text);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .container {
   width: 100%;
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 var(--space-6);
 }
 
 section {
-  padding: 88px 0;
+  padding: var(--space-16) 0;
 }
 
 h1,
 h2,
 h3 {
+  font-family: var(--font-display);
   line-height: 1.2;
-  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-4);
 }
 
 h2 {
   font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 var(--space-4);
 }
 
 .eyebrow {
-  color: var(--accent-2);
+  color: var(--color-accent-text);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.muted {
+  color: var(--color-label-secondary);
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 22px;
-  border-radius: 999px;
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
+  height: 48px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.15s ease;
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 .btn:hover {
   transform: translateY(-1px);
 }
 
+.btn:active {
+  transform: translateY(0);
+}
+
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #0f0b17;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-hover);
 }
 
 .btn-ghost {
-  background: var(--surface-2);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: var(--color-control);
+  color: var(--color-label);
+  box-shadow: var(--shadow-control);
+}
+
+.btn-ghost:hover {
+  background: var(--color-control-hover);
+}
+
+.btn-small {
+  height: 36px;
+  padding: 0 var(--space-4);
+  font-size: 0.9rem;
 }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 28px;
+  background: var(--color-surface);
+  border-radius: var(--radius-group);
+  box-shadow: var(--shadow-raised);
+  padding: var(--space-6);
 }
 
 .grid {
   display: grid;
-  gap: 20px;
+  gap: var(--space-5);
 }
 
 @media (min-width: 720px) {
@@ -115,5 +263,23 @@ h2 {
   }
   .grid-3 {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+  .btn:hover {
+    transform: none;
   }
 }

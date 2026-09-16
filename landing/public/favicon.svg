@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#1a1523"/>
-  <path d="M9 20a7 7 0 1 1 9.9 6.36" fill="none" stroke="#7c5cff" stroke-width="3" stroke-linecap="round"/>
-  <path d="M23 12a7 7 0 1 1-9.9-6.36" fill="none" stroke="#22d3ee" stroke-width="3" stroke-linecap="round"/>
-  <path d="M9 20l-2.5 2.5M9 20l3.2.6" fill="none" stroke="#7c5cff" stroke-width="2.4" stroke-linecap="round"/>
-  <path d="M23 12l2.5-2.5M23 12l-3.2-.6" fill="none" stroke="#22d3ee" stroke-width="2.4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="22" fill="#FFFFFF"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="7">
+    <path d="M18.05 61.63 A34 34 0 0 1 76.05 28.14" stroke="#4C6BB5"/>
+    <path d="M76.9 18.2 L76.05 28.14 L66.1 27.3" stroke="#4C6BB5"/>
+    <path d="M81.95 38.37 A34 34 0 0 1 23.95 71.86" stroke="#29325F"/>
+    <path d="M23.1 81.8 L23.95 71.86 L33.9 72.7" stroke="#29325F"/>
+  </g>
+  <rect x="34" y="36" width="32" height="28" rx="6" fill="#29325F"/>
+  <rect x="37" y="47" width="24" height="7" rx="3.5" fill="#FFFFFF"/>
 </svg>

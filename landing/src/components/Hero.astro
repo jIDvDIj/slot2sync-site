@@ -4,17 +4,16 @@ const base = import.meta.env.BASE_URL;
 
 <header class="hero">
   <div class="container hero-inner">
+    <img class="hero-icon" src={`${base}favicon.svg`} alt="" width="72" height="72" />
     <p class="eyebrow">Slot2Sync</p>
     <h1>Seus jogos, do ponto exato onde você parou — em qualquer máquina.</h1>
     <p class="lede">
       O Slot2Sync guarda automaticamente seus <strong>saves, savestates e configurações</strong>
-      de emuladores de retrogames no <strong>Google Drive</strong>. Joga no PC de casa, abre o
-      mesmo jogo no notebook, continua de onde parou. Sem copiar arquivo na mão, sem pendrive.
+      de emuladores de retrogames na nuvem. Joga no PC de casa, abre o mesmo jogo no notebook,
+      continua de onde parou. Sem copiar arquivo na mão, sem pendrive.
     </p>
     <div class="actions">
-      <a class="btn btn-primary" href="https://github.com/jIDvDIj/slot2sync/releases/latest"
-        >Baixar Slot2Sync</a
-      >
+      <a class="btn btn-primary" href="#download">Baixar Slot2Sync</a>
       <a class="btn btn-ghost" href={`${base}docs/`}>Ver documentação</a>
     </div>
   </div>
@@ -22,14 +21,20 @@ const base = import.meta.env.BASE_URL;
 
 <style>
   .hero {
-    padding: 120px 0 80px;
+    padding: var(--space-16) 0 var(--space-12);
     background:
-      radial-gradient(circle at 15% 20%, rgba(124, 92, 255, 0.25), transparent 45%),
-      radial-gradient(circle at 85% 0%, rgba(34, 211, 238, 0.18), transparent 40%);
+      radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--brand-sky) 16%, transparent), transparent 45%),
+      radial-gradient(circle at 85% 5%, color-mix(in srgb, var(--brand-mint) 14%, transparent), transparent 40%);
   }
 
   .hero-inner {
     max-width: 720px;
+  }
+
+  .hero-icon {
+    border-radius: 16px;
+    box-shadow: var(--shadow-raised);
+    margin-bottom: var(--space-4);
   }
 
   h1 {
@@ -37,14 +42,14 @@ const base = import.meta.env.BASE_URL;
   }
 
   .lede {
-    color: var(--text-muted);
+    color: var(--color-label-secondary);
     font-size: 1.1rem;
   }
 
   .actions {
     display: flex;
-    gap: 14px;
+    gap: var(--space-3);
     flex-wrap: wrap;
-    margin-top: 28px;
+    margin-top: var(--space-6);
   }
 </style>

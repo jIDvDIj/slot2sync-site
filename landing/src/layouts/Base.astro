@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
 
 interface Props {
   title: string;
@@ -19,6 +20,7 @@ const { title, description } = Astro.props;
     <meta name="description" content={description} />
   </head>
   <body>
+    <SiteHeader />
     <slot />
   </body>
 </html>

@@ -5,7 +5,7 @@ const year = new Date().getFullYear();
 
 <footer class="footer">
   <div class="container footer-inner">
-    <span>© {year} Slot2Sync — GPL-3.0-or-later</span>
+    <span class="muted">© {year} Slot2Sync — GPL-3.0-or-later</span>
     <nav>
       <a href={`${base}docs/`}>Documentação</a>
       <a href="https://github.com/jIDvDIj/slot2sync">GitHub</a>
@@ -16,29 +16,28 @@ const year = new Date().getFullYear();
 
 <style>
   .footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 0;
-    color: var(--text-muted);
+    border-top: 1px solid var(--color-separator);
+    padding: var(--space-8) 0;
   }
 
   .footer-inner {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   nav {
     display: flex;
-    gap: 18px;
+    gap: var(--space-5);
   }
 
   nav a {
-    color: var(--text-muted);
+    color: var(--color-label-secondary);
     text-decoration: none;
   }
 
   nav a:hover {
-    color: var(--text);
+    color: var(--color-label);
   }
 </style>
