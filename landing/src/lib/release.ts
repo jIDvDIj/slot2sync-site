@@ -2,8 +2,8 @@
  * Reads the latest GitHub release once at build time and maps its assets to
  * the platforms Slot2Sync ships for. Filenames carry the version
  * (`Slot2Sync_0.16.0_x64-setup.exe`), so a fixed URL would go stale on every
- * release — this keeps every download button pointed at the real, current
- * file without a runtime API call.
+ * release. Reading it at build time keeps every download button pointed at
+ * the real, current file without a runtime API call.
  */
 
 const REPO = "jIDvDIj/slot2sync";

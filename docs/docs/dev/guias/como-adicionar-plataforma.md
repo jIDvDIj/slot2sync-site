@@ -1,12 +1,12 @@
 # Como adicionar código por plataforma
 
 Guia prático de **onde e como** escrever código específico de plataforma no Slot2Sync, sem
-quebrar o build dos outros SOs. Complementa a [Referência — Status multiplataforma](../referencia/status-multiplataforma.md).
+quebrar o build dos outros SOs. Complementa a [Referência: Status multiplataforma](../referencia/status-multiplataforma.md).
 
 Este guia mostra os passos concretos para adicionar um comando ou módulo Rust que seja:
-- **Geral** — roda em desktop e mobile sem diferença
-- **Desktop-only** — Windows, macOS, Linux (inclusive Steam Deck)
-- **Mobile-only** — Android, iOS
+- **Geral**: roda em desktop e mobile sem diferença
+- **Desktop-only**: Windows, macOS, Linux (inclusive Steam Deck)
+- **Mobile-only**: Android, iOS
 
 ---
 
@@ -20,16 +20,16 @@ O Tauri 2 expõe dois predicados de compilação:
 | `#[cfg(mobile)]` | Android, iOS |
 
 Eles são mutuamente exclusivos e cobrem 100% dos targets suportados pelo Tauri 2.
-Para separar desktop de mobile — use `cfg(desktop)` / `cfg(mobile)`.
+Para separar desktop de mobile, use `cfg(desktop)` / `cfg(mobile)`.
 
-`desktop` e `mobile` são flags de `cfg` **definidas pelo build script do Tauri** — funcionam
+`desktop` e `mobile` são flags de `cfg` **definidas pelo build script do Tauri**: funcionam
 em atributos de item no código-fonte (`#[cfg(desktop)]`), mas **não** na resolução de
 dependências do Cargo (ver seção 6).
 
 ## Manter a boundary IPC idêntica entre plataformas
 
 Um comando exposto ao frontend deve existir em **todas** as plataformas, mesmo que seja
-no-op em alguma — assim o `src/lib/ipc.ts` não precisa de ramos por SO. Padrão de duas
+no-op em alguma, assim o `src/lib/ipc.ts` não precisa de ramos por SO. Padrão de duas
 implementações com a mesma assinatura:
 
 ```rust
@@ -60,7 +60,7 @@ frontend chamá-lo só quando `HealthStatus.isMobile` indicar a plataforma certa
 - **`platform/mobile.rs`**: `setup` mobile (webview único já exibido pelo sistema).
 - **`sync/mobile_storage.rs`**: implementação `LocalStorage` sobre o plugin SAF (só-mobile).
 - **`secrets.rs`**: `KeyringStore` (desktop) e `SqliteSecretStore` (mobile), atrás do trait
-  `SecretStore` — escolhido no `setup` por `cfg`.
+  `SecretStore`, escolhido no `setup` por `cfg`.
 
 O `lib.rs` faz a montagem por plataforma no `setup`: escolhe `DesktopStorage`/`MobileStorage`
 e `KeyringStore`/`SqliteSecretStore`, registra plugins só-desktop/só-mobile e liga os
@@ -72,7 +72,7 @@ gatilhos (`resume`/`pause` no mobile; watcher no desktop).
 
 Funciona da mesma forma em qualquer plataforma. Nenhuma marcação especial.
 
-### Rust — `src-tauri/src/commands.rs`
+### Rust: `src-tauri/src/commands.rs`
 
 ```rust
 #[tauri::command]
@@ -82,7 +82,7 @@ pub async fn meu_comando(state: State<'_, AppState>) -> AppResult<String> {
 }
 ```
 
-### `lib.rs` — registrar no handler
+### `lib.rs`: registrar no handler
 
 ```rust
 .invoke_handler(tauri::generate_handler![
@@ -91,7 +91,7 @@ pub async fn meu_comando(state: State<'_, AppState>) -> AppResult<String> {
 ])
 ```
 
-### Frontend — `src/lib/ipc.ts`
+### Frontend: `src/lib/ipc.ts`
 
 ```ts
 export async function meuComando(): Promise<string> {
@@ -99,19 +99,19 @@ export async function meuComando(): Promise<string> {
 }
 ```
 
-### Frontend — `src/types/ipc.ts`
+### Frontend: `src/types/ipc.ts`
 
 Adicione o tipo de retorno se for uma struct Rust (ver
-[Referência — Boundary IPC](../referencia/boundary-ipc.md)).
+[Referência: Boundary IPC](../referencia/boundary-ipc.md)).
 
 ---
 
 ## 2. Comando desktop-only
 
 Use `#[cfg(desktop)]` na definição **e** no registro. O comando simplesmente não
-existe no binário mobile — o frontend mobile nunca deve chamá-lo.
+existe no binário mobile: o frontend mobile nunca deve chamá-lo.
 
-### Rust — `src-tauri/src/commands.rs`
+### Rust: `src-tauri/src/commands.rs`
 
 ```rust
 #[cfg(desktop)]
@@ -125,7 +125,7 @@ pub async fn meu_comando_desktop(app: AppHandle) -> AppResult<()> {
 }
 ```
 
-### `lib.rs` — registrar no handler
+### `lib.rs`: registrar no handler
 
 ```rust
 .invoke_handler(tauri::generate_handler![
@@ -135,7 +135,7 @@ pub async fn meu_comando_desktop(app: AppHandle) -> AppResult<()> {
 ])
 ```
 
-### Frontend — chamar com guarda
+### Frontend: chamar com guarda
 
 ```ts
 // src/lib/ipc.ts
@@ -158,7 +158,7 @@ export async function meuComandoDesktop(): Promise<void> {
 
 Espelho do padrão anterior, com `#[cfg(mobile)]`.
 
-### Rust — `src-tauri/src/commands.rs`
+### Rust: `src-tauri/src/commands.rs`
 
 ```rust
 #[cfg(mobile)]
@@ -182,7 +182,7 @@ pub async fn meu_comando_mobile(_app: AppHandle) -> AppResult<String> {
 }
 ```
 
-### `lib.rs` — registrar no handler
+### `lib.rs`: registrar no handler
 
 ```rust
 .invoke_handler(tauri::generate_handler![
@@ -197,7 +197,7 @@ pub async fn meu_comando_mobile(_app: AppHandle) -> AppResult<String> {
 
 Para código maior (ex.: bandeja, autostart, watcher), use `platform/desktop.rs`.
 
-### `src-tauri/src/platform/desktop.rs` — adicionar função
+### `src-tauri/src/platform/desktop.rs`: adicionar função
 
 ```rust
 /// Faz algo exclusivo do desktop.
@@ -239,14 +239,14 @@ fn minha_init_mobile() {
 
 ## 6. Dependência só de uma plataforma
 
-`cfg(desktop)`/`cfg(mobile)` **não** existem para o Cargo na resolução de dependências —
+`cfg(desktop)`/`cfg(mobile)` **não** existem para o Cargo na resolução de dependências:
 use predicados padrão do Rust (`target_os`) em `src-tauri/Cargo.toml`:
 
 ```toml
 # Desktop (não-Android/iOS): watcher, autostart, keyring do SO.
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-autostart = "2"
-sysinfo = "0.33"
+sysinfo = "0.39"
 keyring = { version = "3", features = ["windows-native", "apple-native", "sync-secret-service"] }
 
 # Mobile: deep link (OAuth) + opener (browser no sandbox Android).
@@ -256,7 +256,7 @@ tauri-plugin-opener = "2"
 
 # Só Windows: leitura de registro para a descoberta de instalações.
 [target.'cfg(windows)'.dependencies]
-winreg = "0.55"
+winreg = "0.56"
 ```
 
 ---
@@ -287,7 +287,7 @@ pub async fn get_settings(app: AppHandle, state: State<'_, AppState>) -> AppResu
 ## Checklist ao adicionar suporte a uma plataforma ou recurso
 
 1. O recurso é geral, desktop-only ou mobile-only? Marque com `cfg` ou deixe sem.
-2. Toca I/O local de saves? Passe pelo trait `LocalStorage` — **nunca** `std::fs` direto.
+2. Toca I/O local de saves? Passe pelo trait `LocalStorage`, **nunca** `std::fs` direto.
 3. Toca segredos (token, `device_id`)? Passe pelo `SecretStore`.
 4. É um comando novo? Garanta a mesma assinatura nas duas plataformas (no-op onde não
    se aplica) e espelhe em `src/types/ipc.ts` + `src/lib/ipc.ts`.

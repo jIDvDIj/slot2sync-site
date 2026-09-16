@@ -1,4 +1,4 @@
-# Referência — Perfis de emulador
+# Referência: Perfis de emulador
 
 Como o Slot2Sync reconhece emuladores e monta o `EmulatorProfile` que alimenta o sync.
 Fonte de verdade: `src-tauri/src/emulator/mod.rs`, `profiles.rs` e `profiles.toml`.
@@ -29,7 +29,7 @@ via `include_str!` e parseada uma vez (`OnceLock`). Campos:
 | --- | --- |
 | `name` | Nome canônico, usado como pasta no provedor remoto ativo. |
 | `process_names` | Nomes de processo do SO, para o process watcher. |
-| `base_candidates` | Candidatos a "base" relativos à raiz — o primeiro que existir é usado. Vazio = a própria raiz. |
+| `base_candidates` | Candidatos a "base" relativos à raiz: o primeiro que existir é usado. Vazio = a própria raiz. |
 | `required` | Pastas que TODAS precisam existir sob a base (E lógico). |
 | `markers` | Pastas das quais AO MENOS UMA precisa existir sob a base (OU lógico). |
 | `saves` / `states` / `config` | Pastas a sincronizar, relativas à base. |
@@ -37,33 +37,42 @@ via `include_str!` e parseada uma vez (`OnceLock`). Campos:
 | `data_dirs.{windows,macos,linux}` | Locais padrão de instalação, com placeholders (`{documents}`, `{localappdata}`, `{appdata}`, `{config}`, `{home}`) resolvidos via crate `dirs`. Usado pela descoberta automática. Inclui variantes Flatpak (Steam Deck/EmuDeck) no Linux. |
 | `registry.uninstall_names` / `registry.app_paths` | Só Windows: confirmam instalação via registro mesmo sem pasta de dados ainda. |
 
-Hoje o catálogo tem duas entradas, PPSSPP e PCSX2, cada uma com sua própria lógica de
-base/marcadores (PPSSPP tem base relocável `PSP/` ou `memstick/PSP/`; PCSX2 exige
-`inis/` e mais um marcador secundário) — é exatamente essa diferença que motivou os
-campos `base_candidates`/`required`/`markers` serem independentes em vez de uma regra
-única.
+Hoje o catálogo tem quatro entradas:
+
+| Emulador | Base | Saves | Savestates | Config |
+| --- | --- | --- | --- | --- |
+| PPSSPP | `PSP` ou `memstick/PSP` (o que existir primeiro) | `SAVEDATA` | `PPSSPP_STATE` | `SYSTEM` |
+| PCSX2 | a própria raiz (exige `inis` e mais um marcador entre `memcards`/`sstates`/`bios`) | `memcards` | `sstates` | `inis` |
+| RetroArch | a própria raiz (exige `saves` ou `states`) | `saves` | `states` | (nenhuma) |
+| DuckStation | a própria raiz (exige `memcards` ou `savestates`) | `memcards` | `savestates` | (nenhuma) |
+
+Cada uma tem sua própria lógica de base/marcadores (PPSSPP tem base relocável `PSP/` ou
+`memstick/PSP/`; PCSX2 exige `inis/` e mais um marcador secundário; RetroArch e
+DuckStation não têm pasta de config sincronizável no catálogo, só saves e savestates).
+É exatamente esse tipo de diferença que motivou os campos
+`base_candidates`/`required`/`markers` serem independentes em vez de uma regra única.
 
 ## Três caminhos para registrar um emulador
 
-1. **Detecção automática numa pasta** (`detect_emulator`) — o usuário aponta uma pasta
+1. **Detecção automática numa pasta** (`detect_emulator`): o usuário aponta uma pasta
    raiz; o backend testa cada spec do catálogo contra ela. `None` = nenhum casou.
-2. **Descoberta automática de instalações** (`discover_emulators`) — varre os
+2. **Descoberta automática de instalações** (`discover_emulators`): varre os
    `data_dirs` do SO atual e, no Windows, o registro, para sugerir emuladores já
    instalados sem o usuário precisar apontar nada. Não persiste nada por si só; a UI
    ainda chama `add_emulator` com a raiz resolvida. Combina dois sinais independentes:
    pasta de dados encontrada (`DiscoverySource::DataDir`) e/ou confirmação via registro
    do Windows (`DiscoverySource::Registry`; os dois juntos são `Both`).
-3. **Fallback manual** (`add_emulator_manual`) — para instalações portáteis ou
+3. **Fallback manual** (`add_emulator_manual`): para instalações portáteis ou
    emuladores fora do catálogo: o usuário informa nome e pastas (saves/savestates/config)
    relativas à raiz. Caminhos absolutos ou com `..` são rejeitados; ao menos uma
    categoria precisa ter pasta. Um emulador manual não tem `process_names`, então os
-   gatilhos `emulator-start`/`emulator-stop` não disparam para ele — sync `manual` e
+   gatilhos `emulator-start`/`emulator-stop` não disparam para ele, mas sync `manual` e
    `startup` continuam funcionando normalmente.
 
 ## Adicionar um emulador ao catálogo
 
 Editar `profiles.toml` é a única mudança necessária para suportar um emulador novo que
-siga o padrão de detecção por marcadores de filesystem — não é preciso escrever código
+siga o padrão de detecção por marcadores de filesystem: não é preciso escrever código
 Rust. Passo a passo completo, com exemplo prático e checklist, em
 [Como adicionar um emulador](../guias/como-adicionar-emulador.md).
 

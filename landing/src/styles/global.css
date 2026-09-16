@@ -38,7 +38,7 @@
   --duration-base: 200ms;
   --duration-spring: 420ms;
 
-  /* Same sky-to-mint gradient as the app icon. Kept rare on purpose — the hero
+  /* Same sky-to-mint gradient as the app icon. Kept rare on purpose: the hero
      glow and the download icons are the only places it appears. */
   --brand-sky: #57b4ea;
   --brand-periwinkle: #7f8ff0;

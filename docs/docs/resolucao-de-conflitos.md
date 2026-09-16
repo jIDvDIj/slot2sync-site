@@ -2,9 +2,9 @@
 
 ## Quando acontece
 
-Um conflito acontece quando **o mesmo arquivo mudou nos dois lados** — na máquina local
-e no Drive — desde a última sincronização. É o caso, por exemplo, de jogar a mesma
-partida em dois computadores sem sincronizar entre uma sessão e outra.
+Um conflito acontece quando **o mesmo arquivo mudou nos dois lados**, na máquina local
+e no armazenamento remoto, desde a última sincronização. É o caso, por exemplo, de
+jogar a mesma partida em dois computadores sem sincronizar entre uma sessão e outra.
 
 O Slot2Sync nunca decide sozinho nesse caso: ele pausa a sincronização **daquele
 emulador específico** e avisa você por notificação nativa. Os demais emuladores, sem
@@ -12,14 +12,15 @@ conflito, continuam sincronizando normalmente.
 
 ## Como resolver
 
-No card do emulador afetado aparece um botão **Resolver conflito**. Ao clicar, você vê
-os dois lados — data, tamanho e o nome do dispositivo de origem de cada versão — e
-escolhe qual manter:
+Na página do emulador afetado aparece um aviso listando os arquivos em conflito. Para
+cada um, você vê os dois lados, este dispositivo e o armazenamento remoto, com data,
+tamanho e nome do dispositivo de origem, e escolhe qual manter clicando em **Manter
+esta versão** do lado desejado:
 
-- **Manter local** — a versão do computador atual é enviada por cima da versão no
-  Drive.
-- **Manter Drive** — a versão do Drive é baixada por cima da versão local. Antes disso
-  acontecer, a versão local é movida para uma pasta de backup, então nada é perdido de
-  verdade.
+- manter a versão deste dispositivo envia ela por cima da versão no armazenamento
+  remoto;
+- manter a versão remota baixa ela por cima da versão local. Antes disso acontecer, a
+  versão local é guardada como backup, então nada é perdido de verdade (dá para abrir
+  essa cópia pelo botão **Mostrar cópia local**).
 
 Depois de resolver, a sincronização daquele emulador é desbloqueada automaticamente.

@@ -23,7 +23,7 @@ Riscos identificados na arquitetura do Slot2Sync e como cada um é tratado. A co
 problema dobra. Tudo é comparado em UTC (epoch ms), com tolerância de ±2s. O par
 `(local, drive)` do último sync, gravado no manifest, permite reconhecer "nada mudou" mesmo
 com skew maior que a tolerância. Como o sync nunca deleta, o pior caso é sobrescrita de um
-save antigo no lado perdedor — recuperável pelo histórico de revisões do Drive.
+save antigo no lado perdedor, recuperável pelo histórico de revisões do Drive.
 
 ### 2. Rate limits das APIs de provedor remoto
 `remote::http::send_with_retry` (transporte compartilhado por Drive/Dropbox/OneDrive) aplica
@@ -68,12 +68,12 @@ como erro fatal.
 ### 9. Ambiente de dev (WSL2)
 O repositório vive em `/mnt/c` sob WSL, mas o alvo de produção é Windows. As instruções de
 ambiente (WSL/`CARGO_TARGET_DIR`, fix do rollup) ficam documentadas na raiz do repositório do
-app — não duplicadas aqui para não divergirem de uma fonte para a outra.
+app, não duplicadas aqui, para não divergirem de uma fonte para a outra.
 
 ### 10. Saves independentes de dispositivos diferentes no primeiro sync
 A resolução por mtime + manifest (risco #1) cobre conflitos a partir do **segundo** sync de um
 arquivo. No **primeiro** sync (sem manifest) com o arquivo presente local e no Drive, a regra
-conservadora é *Drive-vence-com-backup* — mas isso decidia automaticamente um caso ambíguo
+conservadora é *Drive-vence-com-backup*, mas isso decidia automaticamente um caso ambíguo
 quando os dois saves vêm de **máquinas diferentes**. Mitigado com um `device_id` estável (UUID
 no keyring) estampado nos uploads: quando a versão do Drive foi publicada por outro
 dispositivo, o primeiro sync vira conflito explícito em vez de sobrescrever.

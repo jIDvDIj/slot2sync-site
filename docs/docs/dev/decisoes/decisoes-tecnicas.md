@@ -41,14 +41,14 @@ para abusar das credenciais do app conforme a base de usuários cresce.
 **Escolha**: um Cloudflare Worker minúsculo intermedia `/token` e `/refresh`, guardando o
 `client_secret` como secret cifrado do Cloudflare. O app só conhece a URL pública do Worker
 e um `PROXY_SECRET` compartilhado (header `X-Proxy-Secret`). No CI, apenas `CLIENT_ID`,
-`TOKEN_PROXY_URL` e `PROXY_SECRET` são injetados — o `client_secret` nunca entra no GitHub.
+`TOKEN_PROXY_URL` e `PROXY_SECRET` são injetados: o `client_secret` nunca entra no GitHub.
 
 **Justificativa**: o `client_secret` deixa de existir em qualquer artefato distribuído ou
-versionado. O redirect continua sendo o loopback `http://127.0.0.1:<porta>` tratado pelo app
-— o Worker **não** é redirect URI, então o cliente OAuth permanece do tipo **Desktop app**
+versionado. O redirect continua sendo o loopback `http://127.0.0.1:<porta>` tratado pelo app:
+o Worker **não** é redirect URI, então o cliente OAuth permanece do tipo **Desktop app**
 (único que aceita loopback em porta arbitrária).
 
-**Trade-off aceito**: o `PROXY_SECRET` ainda é embutido no binário, logo extraível — barra
+**Trade-off aceito**: o `PROXY_SECRET` ainda é embutido no binário, logo extraível: barra
 abuso casual e permite rotação, mas não é segredo forte. A proteção real é o `client_secret`
 fora do binário. Suficiente para o porte do projeto; atestação de cliente fica fora de escopo.
 
@@ -65,16 +65,16 @@ schemes na UI do Console; "Android" (Google Sign-In SDK) não aceita o fluxo PKE
 browser usado pelo app (retorna `invalid_request`).
 
 **Escolha**: um único client OAuth tipo **Web application**, com duas redirect URIs
-registradas — `http://127.0.0.1` (desktop, qualquer porta) e `https://<worker>/oauth/callback`
+registradas: `http://127.0.0.1` (desktop, qualquer porta) e `https://<worker>/oauth/callback`
 (Android). O Worker ganhou um endpoint novo, `GET /oauth/callback`, que recebe o `code` do
 Google e faz um redirect 302 para o deep link `com.slot2sync.app:/oauth2redirect?...`; o app
 mobile escuta esse deep link e troca o `code` no `/token` do Worker normalmente.
-`SLOT2SYNC_GOOGLE_CLIENT_ID_ANDROID` (client dedicado da tentativa anterior) foi removido —
+`SLOT2SYNC_GOOGLE_CLIENT_ID_ANDROID` (client dedicado da tentativa anterior) foi removido,
 desktop e mobile passaram a compartilhar as mesmas variáveis de ambiente.
 
 **Justificativa**: um client único simplifica a configuração (uma entrada no Google Console,
 não uma por plataforma) e reaproveita a infraestrutura do Worker já existente para esconder o
-`client_secret` — o endpoint `/oauth/callback` só faz um redirect, não expõe nenhum segredo.
+`client_secret`: o endpoint `/oauth/callback` só faz um redirect, não expõe nenhum segredo.
 
 ---
 
@@ -100,7 +100,7 @@ aleatório protege contra CSRF.
 memória, renovado automaticamente com margem de 60s.
 
 **Justificativa**: keychain é o local seguro do SO para segredos. Access token é efêmero
-e não precisa persistir. **Tokens nunca cruzam a boundary** — o frontend só vê
+e não precisa persistir. **Tokens nunca cruzam a boundary**: o frontend só vê
 `AuthStatus`. A trait de storage permite fallback futuro no Linux (Secret Service ausente
 em setups minimalistas).
 
@@ -130,16 +130,16 @@ sync** registrado no manifest. Nunca deleta.
 
 **Justificativa**:
 - A tolerância absorve granularidade de filesystem e pequenos desvios de relógio.
-- O par `(local, drive)` do último sync distingue "nada mudou" de "mudou de um lado" —
+- O par `(local, drive)` do último sync distingue "nada mudou" de "mudou de um lado":
   essencial porque os relógios local e remoto divergem; sem isso, qualquer skew causaria
   re-sync eterno.
 - Uploads gravam o mtime local em `modifiedTime`; downloads aplicam o `modifiedTime` do
   Drive no arquivo local. Os dois lados convergem para o mesmo timestamp.
-- Nunca deleta: o pior caso é um save antigo sobrescrito no lado perdedor — e o histórico
+- Nunca deleta: o pior caso é um save antigo sobrescrito no lado perdedor, e o histórico
   de revisões do Drive ainda permite resgate manual.
 
 Alternativa (hash de conteúdo puro, sem mtime) rejeitada como critério primário por custo
-de I/O — hash entrou depois como pré-filtro complementar (ver decisão abaixo), não como
+de I/O: hash entrou depois como pré-filtro complementar (ver decisão abaixo), não como
 substituto do timestamp.
 
 ---
@@ -147,7 +147,7 @@ substituto do timestamp.
 ## Sem manifest prévio: primeiro sync, dispositivo desconhecido e conflito real
 
 **Contexto**: além do caso "com manifest" acima, três cenários sem histórico de sync
-precisavam de regra própria — sobrepor um save de 100h por um de 20 minutos, uma edição
+precisavam de regra própria: sobrepor um save de 100h por um de 20 minutos, uma edição
 simultânea silenciosamente resolvida por mtime sem aviso, e saves independentes de
 dispositivos diferentes tratados como se fossem o mesmo progresso.
 
@@ -191,7 +191,7 @@ A tabela tem dedupe (`UNIQUE`) e contagem de tentativas para diagnóstico.
 
 **Justificativa**: adicionar um emulador novo é editar dados (`profiles.toml`), não
 escrever código em `sync/`. Testável isoladamente (o diff e o conflito não tocam disco
-real além do scan). Ver [Referência — Perfis de emulador](../referencia/perfis-emulador.md).
+real além do scan). Ver [Referência: Perfis de emulador](../referencia/perfis-emulador.md).
 
 ---
 
@@ -199,10 +199,10 @@ real além do scan). Ver [Referência — Perfis de emulador](../referencia/perf
 
 **Contexto**: comparar só por mtime tem um falso positivo comum: um arquivo é tocado (ex.:
 o emulador reescreve o mesmo conteúdo, ou o sync anterior reancorou o mtime local) sem que
-o conteúdo mude — o que dispararia um upload/download desnecessário.
+o conteúdo mude, o que dispararia um upload/download desnecessário.
 
 **Escolha**: quando o mtime local diverge do manifest mas o hash SHA-256 do conteúdo é
-igual ao registrado, o diff trata como "arquivo não mudou de verdade" — reancora o mtime no
+igual ao registrado, o diff trata como "arquivo não mudou de verdade": reancora o mtime no
 manifest sem transferir. O hash não substitui o timestamp como critério de decisão entre
 `Upload`/`Download` (isso continua sendo por mtime); ele só evita transferências
 desnecessárias quando o conteúdo é idêntico.
@@ -216,7 +216,7 @@ todo arquivo a cada scan seria caro; o pré-filtro só entra quando o mtime já 
 ## Watcher de filesystem nativo, complementar ao watcher de processos
 
 **Contexto**: o watcher de processos (abaixo) detecta abertura/fechamento do emulador, mas
-não mudanças de arquivo em si — útil para outros sinais (ex.: save recém-escrito enquanto o
+não mudanças de arquivo em si: útil para outros sinais (ex.: save recém-escrito enquanto o
 emulador já está rodando).
 
 **Escolha**: um segundo watcher, baseado na crate `notify` (eventos nativos do SO), observa
@@ -236,8 +236,8 @@ lock do SQLite).
 **Escolha**: plugin oficial `tauri_plugin_single_instance`, que detecta a instância já
 rodando e foca a janela existente em vez de subir um processo novo.
 
-**Justificativa**: solução mantida pelo ecossistema Tauri, em vez de lock de arquivo manual
-— menos código próprio para uma garantia que é essencialmente do SO.
+**Justificativa**: solução mantida pelo ecossistema Tauri, em vez de lock de arquivo manual,
+com menos código próprio para uma garantia que é essencialmente do SO.
 
 ---
 
@@ -272,7 +272,7 @@ exigir que ele desative gatilhos inteiros para isso.
 
 ## Padrões de exclusão por emulador
 
-**Contexto**: nem todo arquivo sob as pastas monitoradas deve ser sincronizado — caches e
+**Contexto**: nem todo arquivo sob as pastas monitoradas deve ser sincronizado: caches e
 temporários específicos de um emulador não têm valor de save e infláveis desnecessariamente
 o volume sincronizado.
 
@@ -280,14 +280,14 @@ o volume sincronizado.
 emulador vindo do catálogo (`profiles.toml`) e editável pelo usuário por emulador.
 
 **Justificativa**: mantém o filtro próximo de onde o perfil já é definido, em vez de uma
-lista global — cada emulador tem seus próprios arquivos de cache/temporário.
+lista global, já que cada emulador tem seus próprios arquivos de cache/temporário.
 
 ---
 
 ## Process watcher: abertura imediata, fechamento com debounce
 
 **Contexto**: o watcher de `sysinfo` ocasionalmente não lista um processo num tick, e
-emuladores spawnam processos auxiliares — ambos causam flapping. Mas os dois gatilhos têm
+emuladores spawnam processos auxiliares: ambos causam flapping. Mas os dois gatilhos têm
 urgências opostas.
 
 **Escolha**: `EmulatorStarted` é emitido **no primeiro tick** em que o processo aparece;
@@ -295,7 +295,7 @@ urgências opostas.
 (`RunStateTracker::reconcile`) é pura, sem `sysinfo`.
 
 **Justificativa**: baixar os saves do Drive (abertura → Drive → Local) deve acontecer o
-quanto antes, antes de o jogo ler os arquivos — atraso aqui é prejudicial. Já declarar
+quanto antes, antes de o jogo ler os arquivos: atraso aqui é prejudicial. Já declarar
 "fechou" cedo demais dispararia um upload Local → Drive no meio de um flicker, então vale
 esperar a confirmação. Separar a lógica pura do `sysinfo` torna o debounce 100% testável.
 Alternativa (debounce simétrico) rejeitada por atrasar o download de abertura sem ganho.
@@ -324,7 +324,7 @@ registros) e dispensa um canal extra de invalidação. O refresh mínimo mantém
 **Escolha**: `reqwest` com `rustls-tls` e `default-features = false`.
 
 **Justificativa**: TLS puro Rust, mesma stack em Windows/Linux/macOS, sem dependência de
-biblioteca de sistema — melhor para distribuição, não só para o dev no WSL.
+biblioteca de sistema: melhor para distribuição, não só para o dev no WSL.
 
 ---
 
@@ -352,7 +352,7 @@ a closure `build` reconstrói o request a cada tentativa.
 `app.exit(0)`.
 
 **Justificativa**: como fechar a janela só minimiza para a tray, o único caminho de saída
-real passa pelo "Sair" — então o sync de despedida sempre executa. Coloquei o sync nesse
+real passa pelo "Sair", então o sync de despedida sempre executa. Coloquei o sync nesse
 handler em vez do `RunEvent::ExitRequested` (a ideia inicial) porque é uma saída
 intencional e controlável: evita a dança de `prevent_exit` + re-disparar o exit depois do
 sync async. Todas as operações de tray/janela são feitas no Rust, então não exigem
@@ -401,7 +401,7 @@ disponível se necessário.
 
 **Justificativa**: para a quantidade de tipos do início do projeto, manual + testes era
 suficiente e sem dependência extra. O drift do `file_busy` (encontrado numa revisão anterior
-da documentação) mostrou o risco — daí os testes de serialização e a centralização num
+da documentação) mostrou o risco: daí os testes de serialização e a centralização num
 arquivo só de cada lado. A boundary cresceu bastante desde então (dezenas de comandos hoje);
 a decisão de migrar ou não para geração automática está registrada, em aberto, em
 [Geração automática da boundary IPC](./geracao-automatica-ipc.md).
@@ -409,7 +409,7 @@ a decisão de migrar ou não para geração automática está registrada, em abe
 ## Storage remoto generalizado atrás de um trait (`RemoteProvider`)
 
 **Contexto**: o `SyncEngine` dependia de `DriveApi`, um trait já existente mas pensado só para
-permitir mockar o Drive em teste — todo o resto do núcleo (schema do manifest, struct de
+permitir mockar o Drive em teste: todo o resto do núcleo (schema do manifest, struct de
 conflito, fluxo OAuth) assumia Google Drive como único backend possível, com nomes de
 campo/coluna literalmente prefixados `drive_`.
 
@@ -421,8 +421,8 @@ Três novas implementações concretas do trait entraram no mesmo commit: Dropbo
 pasta local/de rede sem OAuth nenhum. Detalhes em
 [Provedores de storage](../explicacao/provedores-de-storage.md).
 
-**Justificativa**: a alternativa — deixar o Drive hardcoded e reabrir esse mesmo trabalho de
-generalização quando um segundo provedor fosse pedido — teria custo maior depois do que agora,
+**Justificativa**: a alternativa, deixar o Drive hardcoded e reabrir esse mesmo trabalho de
+generalização quando um segundo provedor fosse pedido, teria custo maior depois do que agora,
 porque o acoplamento só cresce (mais telas, mais campos, mais lugares citando "Drive"
 explicitamente). Como o trait de injeção de dependência para teste já existia, generalizá-lo
 era estrutural, não uma reescrita: o `DriveClient` continuou implementando o trait sem mudança
@@ -437,13 +437,13 @@ sido cadastradas. Deixar os botões clicáveis levaria a um fluxo OAuth que semp
 
 **Escolha**: manter os comandos `connect_dropbox`/`connect_onedrive` registrados na boundary
 (o backend não muda), mas desativar os dois botões no seletor de provedor da tela de login,
-com um rótulo "em breve" — em vez de escondê-los ou de criar uma branch separada sem esse
+com um rótulo "em breve", em vez de escondê-los ou de criar uma branch separada sem esse
 código.
 
 **Justificativa**: duas alternativas foram descartadas. Esconder os botões por completo
 jogaria fora a sinalização de que o suporte já existe e está a caminho. Criar uma branch nova
 só com a generalização (sem Dropbox/OneDrive) evitaria qualquer código "desligado" no binário,
-mas descartaria trabalho já pronto e testado só para reaplicá-lo depois — sem ganho real, já
+mas descartaria trabalho já pronto e testado só para reaplicá-lo depois, sem ganho real, já
 que os comandos desativados falham graciosamente (erro de credencial ausente) se alguém os
 chamar fora da UI, sem risco de segurança nem de dado corrompido.
 
@@ -458,7 +458,7 @@ e sem inflar o bundle de um app desktop que já embute o WebView2/WKWebView do s
 **Escolha**: um conjunto pequeno de custom properties CSS (`src/styles/tokens.css`) com papéis
 semânticos (superfície, texto primário/secundário, aviso, erro) redefinidos por tema, e um
 punhado de primitivos próprios em `src/components/ui/` (`Button`, `Dialog` sobre o `<dialog>`
-nativo, `Switch`, linhas de formulário, ícones em SVG inline) — nenhuma dependência de UI
+nativo, `Switch`, linhas de formulário, ícones em SVG inline), sem nenhuma dependência de UI
 externa.
 
 **Justificativa**: `prefers-reduced-motion`, `prefers-reduced-transparency` e
@@ -475,12 +475,12 @@ aparecer.
 **Contexto**: a lista de jogos sincronizados mostrava o serial técnico do jogo (`ULUS10391`)
 quando não havia tradução para um nome legível. A tabela embutida original cobria só 9 títulos
 verificados manualmente. OpenVGDB, a alternativa mais conhecida, não tem licença declarada no
-repositório e está parado desde 2021 (v29.0) — risco jurídico para embutir num binário GPL, e
+repositório e está parado desde 2021 (v29.0): risco jurídico para embutir num binário GPL, e
 sem jogos mais recentes.
 
 **Escolha**: `scripts/build-game-titles.mjs` gera `src-tauri/assets/game-titles.tsv` a partir
 dos arquivos `.dat` de serial do [libretro-database](https://github.com/libretro/libretro-database)
-(PSP, PS1, PS2, GameCube, Wii, Dreamcast), mantendo só `serial → nome` — sem hashes, capas ou
+(PSP, PS1, PS2, GameCube, Wii, Dreamcast), mantendo só `serial → nome`, sem hashes, capas ou
 gêneros. O arquivo (~1,3 MB) é embutido via `include_str!` e consultado por um `HashMap`
 construído uma vez (`OnceLock`). O crédito à licença **CC BY-SA 4.0** dos dados fica em
 `NOTICE.md`, na raiz do repositório do app.
@@ -488,4 +488,4 @@ construído uma vez (`OnceLock`). O crédito à licença **CC BY-SA 4.0** dos da
 **Justificativa**: licença clara e compatível com distribuição pública; dado atualizado (2026,
 contra 2021 do OpenVGDB); busca 100% offline, sem chamada de rede nem dependência de serviço
 externo, o que importa tanto no desktop quanto no mobile. O arquivo gerado não é editado à
-mão — reexecutar o script é a forma de atualizá-lo.
+mão: reexecutar o script é a forma de atualizá-lo.

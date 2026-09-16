@@ -1,13 +1,13 @@
 # Documentação do Slot2Sync
 
-Documentação técnica do Slot2Sync — aplicação desktop (Tauri v2 + Rust + React/TS)
+Documentação técnica do Slot2Sync: aplicação desktop (Tauri v2 + Rust + React/TS)
 que sincroniza automaticamente saves, savestates e configurações de emuladores de
 retrogames com um provedor de storage remoto (Google Drive hoje; Dropbox e OneDrive
-implementados e em preparação — ver [Provedores de storage](./explicacao/provedores-de-storage.md)).
+implementados e em preparação, ver [Provedores de storage](./explicacao/provedores-de-storage.md)).
 
 Organizada pelo framework [Diátaxis](https://diataxis.fr/): tutoriais ensinam fazendo,
 guias resolvem uma tarefa específica, referências respondem "o que é X", explicações
-respondem "como/por que X funciona". Decisões e riscos ficam num registro à parte —
+respondem "como/por que X funciona". Decisões e riscos ficam num registro à parte:
 não são nenhuma das quatro coisas acima, são histórico de raciocínio.
 
 Para a visão geral do produto e os objetivos que guiam as decisões de projeto, veja o
@@ -61,7 +61,7 @@ Para a visão geral do produto e os objetivos que guiam as decisões de projeto,
 
 ## Trabalho pendente
 
-[`roadmap.md`](./roadmap.md) — lista consolidada do que ainda falta, priorizável.
+[`roadmap.md`](./roadmap.md): lista consolidada do que ainda falta, priorizável.
 
 ## Contribuindo
 

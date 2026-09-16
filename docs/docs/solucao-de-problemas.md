@@ -4,8 +4,8 @@
 
 Normal para aplicativos de desenvolvedores independentes sem certificado de assinatura
 de código pago. Clique em **Mais informações → Executar assim mesmo**. O código-fonte é
-público — veja o [repositório no GitHub](https://github.com/jIDvDIj/slot2sync) se
-quiser conferir o que está sendo instalado.
+público: veja o [repositório no GitHub](https://github.com/jIDvDIj/slot2sync) se quiser
+conferir o que está sendo instalado.
 
 ## O Slot2Sync não detectou meu emulador
 
@@ -18,15 +18,17 @@ emulador, a versão e o sistema operacional.
 
 1. Confira se o gatilho relevante está ligado em **Configurações → Sincronização** (veja
    [Sincronização](sincronizacao.md#gatilhos-automaticos)).
-2. Confira se aquele emulador não está com um
-   [conflito pendente](resolucao-de-conflitos.md) — enquanto houver conflito, a
+2. Confira, na página do emulador, se aquele emulador não está com um
+   [conflito pendente](resolucao-de-conflitos.md): enquanto houver conflito, a
    sincronização automática daquele emulador fica pausada.
-3. Sem internet? A sincronização vira uma pendência e é retomada automaticamente assim
-   que a conexão voltar.
+3. Confira, também na página do emulador, se a categoria daquele arquivo (saves ou
+   savestates) está ligada e se ele não bate com um padrão a ignorar.
+4. Sem internet? A sincronização vira uma pendência, visível na página **Atividade**, e
+   é retomada automaticamente assim que a conexão voltar.
 
 ## Fechei a janela e o app "desapareceu"
 
-Ele não fechou — fechar a janela só a esconde, para o Slot2Sync continuar rodando na
+Ele não fechou: fechar a janela só a esconde, para o Slot2Sync continuar rodando na
 bandeja do sistema e sincronizando quando o emulador abrir ou fechar. Procure o ícone
 perto do relógio do Windows. Para sair de verdade, use **Sair** no menu da bandeja.
 

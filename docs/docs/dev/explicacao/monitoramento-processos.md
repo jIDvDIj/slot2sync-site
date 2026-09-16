@@ -25,11 +25,11 @@ barato.
 
 O matching é por **igualdade exata case-insensitive** entre o nome do processo e os
 nomes de processo conhecidos do perfil (hoje vêm do catálogo declarativo de emuladores,
-não de código por emulador) — igualdade, não `contains`, para evitar falso positivo.
+não de código por emulador): igualdade, não `contains`, para evitar falso positivo.
 
 ## Debounce: abertura imediata, fechamento com atraso
 
-A máquina de estados que decide as transições é **pura e sem `sysinfo`** — recebe "quais
+A máquina de estados que decide as transições é **pura e sem `sysinfo`**: recebe "quais
 emuladores estão presentes neste tick" e devolve as transições. Por isso é inteiramente
 testável sem o SO.
 
@@ -38,7 +38,7 @@ testável sem o SO.
 - **Fechamento** só emite "parado" depois de alguns ticks consecutivos sem o processo.
   Protege contra flapping do `sysinfo` ou processos auxiliares que o emulador spawna.
 - Um emulador **removido** da configuração é esquecido em silêncio (sem evento de
-  parada) — não queremos disparar sync ao desconfigurar.
+  parada): não queremos disparar sync ao desconfigurar.
 
 Ver [Decisões técnicas](../decisoes/decisoes-tecnicas.md#process-watcher-abertura-imediata-fechamento-com-debounce).
 
@@ -57,14 +57,31 @@ ignorados pelo watcher.
 
 ## Evento ao frontend
 
-`emulator:status` com payload `{ emulator, running }` — ver
-[Referência — Boundary IPC](../referencia/boundary-ipc.md#eventos).
+`emulator:status` com payload `{ emulator, running }`, ver
+[Referência: Boundary IPC](../referencia/boundary-ipc.md#eventos).
 
 ## Watcher de filesystem complementar
 
-Além do watcher de processos, existe um watcher de filesystem nativo (`watcher/fs_watcher.rs`,
-via crate `notify`) que observa mudanças diretamente nos arquivos monitorados — um
-mecanismo distinto do polling de processos, não coberto em detalhe aqui.
+Além do watcher de processos, existe um watcher de filesystem (`watcher/fs_watcher.rs`, gatilho
+`file-change`) que reage a escritas nas pastas de saves/savestates sem esperar o emulador
+fechar, útil em sessões longas. Usa eventos nativos da crate `notify`
+(`ReadDirectoryChangesW` no Windows, `inotify` no Linux, `FSEvents` no macOS) em vez de
+polling, e dispara sempre um sync `Local → Drive` (o próprio arquivo mudou localmente).
+
+Três proteções específicas desse watcher:
+
+- **Debounce agregador**: cada evento reinicia a janela de espera por emulador; o sync só
+  dispara alguns segundos após o *último* evento, agrupando rajadas de escrita (savestates
+  gravados em sequência, por exemplo) num único sync em vez de um por arquivo.
+- **Anti-loop**: eventos em arquivos que o próprio sync acabou de baixar
+  (`SyncEngine::is_recent_download`) e em temporários de escrita atômica são ignorados, para
+  não reagir à própria escrita que o motor de sync fez.
+- **Nunca com o jogo aberto**: o disparo é adiado enquanto qualquer emulador estiver rodando;
+  o gatilho `emulator-stop` do watcher de processos já cobre o fechamento.
+
+Diferente dos gatilhos de `emulator-start`/`emulator-stop`, `file-change` não tem toggle nas
+Configurações: está sempre ativo. Ver [Configurações](./configuracoes.md#sincronizacao-automatica-verificacao-periodica-e-banda-aba-sincronizacao)
+e [Arquitetura](./arquitetura.md#os-gatilhos-de-sincronizacao).
 
 ## Como testar manualmente
 
@@ -76,4 +93,4 @@ Com o Drive conectado e um emulador cadastrado:
 3. Acompanhe em `%LOCALAPPDATA%\com.slot2sync.app\logs\slot2sync.log`.
 
 > O caminho real do `sysinfo` não é exercitável no WSL (sem GUI nem emuladores), mas toda
-> a lógica de decisão — a parte sujeita a bug — está coberta por testes automatizados.
+> a lógica de decisão, a parte sujeita a bug, está coberta por testes automatizados.
