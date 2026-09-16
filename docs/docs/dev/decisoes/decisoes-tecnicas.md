@@ -446,3 +446,46 @@ só com a generalização (sem Dropbox/OneDrive) evitaria qualquer código "desl
 mas descartaria trabalho já pronto e testado só para reaplicá-lo depois — sem ganho real, já
 que os comandos desativados falham graciosamente (erro de credencial ausente) se alguém os
 chamar fora da UI, sem risco de segurança nem de dado corrompido.
+
+---
+
+## Sistema de design com tokens CSS, sem biblioteca de componentes
+
+**Contexto**: a interface precisava de uma identidade visual própria (claro/escuro, alto
+contraste, movimento reduzido) sem herdar o visual genérico de uma lib de componentes pronta,
+e sem inflar o bundle de um app desktop que já embute o WebView2/WKWebView do sistema.
+
+**Escolha**: um conjunto pequeno de custom properties CSS (`src/styles/tokens.css`) com papéis
+semânticos (superfície, texto primário/secundário, aviso, erro) redefinidos por tema, e um
+punhado de primitivos próprios em `src/components/ui/` (`Button`, `Dialog` sobre o `<dialog>`
+nativo, `Switch`, linhas de formulário, ícones em SVG inline) — nenhuma dependência de UI
+externa.
+
+**Justificativa**: `prefers-reduced-motion`, `prefers-reduced-transparency` e
+`prefers-contrast` viram overrides nos próprios tokens em vez de lógica replicada em cada
+componente; o `<dialog>` nativo já resolve foco e camada de topo sem uma lib de modal;
+zero peso adicional no bundle. Custo aceito: sem os componentes prontos de uma lib madura,
+cada primitivo novo (ex.: um date picker) precisa ser construído à mão quando a necessidade
+aparecer.
+
+---
+
+## Nomes de jogos: tabela gerada do libretro-database, embutida no binário
+
+**Contexto**: a lista de jogos sincronizados mostrava o serial técnico do jogo (`ULUS10391`)
+quando não havia tradução para um nome legível. A tabela embutida original cobria só 9 títulos
+verificados manualmente. OpenVGDB, a alternativa mais conhecida, não tem licença declarada no
+repositório e está parado desde 2021 (v29.0) — risco jurídico para embutir num binário GPL, e
+sem jogos mais recentes.
+
+**Escolha**: `scripts/build-game-titles.mjs` gera `src-tauri/assets/game-titles.tsv` a partir
+dos arquivos `.dat` de serial do [libretro-database](https://github.com/libretro/libretro-database)
+(PSP, PS1, PS2, GameCube, Wii, Dreamcast), mantendo só `serial → nome` — sem hashes, capas ou
+gêneros. O arquivo (~1,3 MB) é embutido via `include_str!` e consultado por um `HashMap`
+construído uma vez (`OnceLock`). O crédito à licença **CC BY-SA 4.0** dos dados fica em
+`NOTICE.md`, na raiz do repositório do app.
+
+**Justificativa**: licença clara e compatível com distribuição pública; dado atualizado (2026,
+contra 2021 do OpenVGDB); busca 100% offline, sem chamada de rede nem dependência de serviço
+externo, o que importa tanto no desktop quanto no mobile. O arquivo gerado não é editado à
+mão — reexecutar o script é a forma de atualizá-lo.

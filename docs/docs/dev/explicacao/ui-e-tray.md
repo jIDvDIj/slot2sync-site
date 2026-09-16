@@ -49,12 +49,38 @@ Ver [Decisões técnicas](../decisoes/decisoes-tecnicas.md#notificacoes-de-erro-
 
 ## Fluxo do frontend
 
-A tela principal é uma aplicação React com um assinante único dos eventos de sync e de
-status de emulador, que distribui o estado consolidado para a barra de status (progresso,
-último sync, erro) e para os cards de cada emulador (badge "em execução"). Adicionar um
-emulador abre o seletor de pasta nativo do sistema e envia o caminho escolhido para
-detecção no backend; um erro de "emulador não reconhecido" aparece inline, com a opção de
-cadastro manual.
+A interface é uma aplicação React de página única (sem router), organizada em quatro
+telas — Visão geral, Emulador, Atividade e Configurações — trocadas por estado local no
+componente raiz. No desktop, a navegação é uma barra lateral fixa; abaixo de 700px ela vira
+uma barra de abas no rodapé, e a página de emulador ganha um botão de voltar. Um assinante
+único dos eventos de sync e de status de emulador distribui o estado consolidado para a
+barra superior (progresso, último sync, erro), o botão de sincronizar e a lista de
+emuladores. Adicionar um emulador abre o seletor de pasta nativo do sistema e envia o
+caminho escolhido para detecção no backend; um erro de "emulador não reconhecido" aparece
+inline, com a opção de cadastro manual.
+
+Aparência (claro/escuro) segue a preferência do sistema operacional por padrão; escolher
+Claro ou Escuro nas Configurações grava a preferência só no `localStorage` do webview — é
+puramente de exibição, então não cruza a boundary IPC. Categorias de sync e padrões de
+exclusão, que antes viviam nas Configurações globais, agora ficam na própria página do
+emulador, junto com o que mais afeta só ele (conflitos, pendências, jogos sincronizados).
+
+### Sistema de design
+
+Todo espaçamento, cor, raio e duração de animação vem de custom properties CSS
+(`src/styles/tokens.css`) — nenhum componente hardcoda esses valores. As paletas clara e
+escura são geradas a partir do mesmo conjunto de papéis semânticos (superfície, texto
+primário/secundário, aviso, erro), o que faz alternar de tema não exigir tocar em nenhum
+componente. `prefers-reduced-motion`, `prefers-reduced-transparency` e
+`prefers-contrast: more` são lidos direto nos tokens (ex.: transições viram
+praticamente instantâneas, o material translúcido do topo vira opaco), então o suporte de
+acessibilidade é automático em vez de replicado componente a componente.
+
+Os primitivos de UI (`src/components/ui/`) são poucos e sem dependência externa: `Button`,
+`Dialog` (baseado no `<dialog>` nativo, que já resolve foco e a camada de topo), `Switch`,
+linhas de formulário e um pequeno conjunto de ícones em SVG inline. O botão de sincronizar é
+o elemento de assinatura visual do app: ele mesmo vira o indicador de progresso durante um
+sync (um anel com o gradiente da marca) em vez de um spinner genérico ao lado.
 
 ## Comando exposto
 
@@ -63,12 +89,14 @@ e evento `emulator:status`.
 
 ## Como testar manualmente (Windows, `npm run tauri dev`)
 
-1. Conecte o Drive → adicionar emulador abre o seletor de pasta nativo → escolha a pasta
-   de um emulador suportado; o card aparece;
-2. "Sincronizar agora" mostra o progresso e depois o resumo do último sync;
+1. Conecte um provedor → "Adicionar emulador" abre o seletor de pasta nativo → escolha a
+   pasta de um emulador suportado; o tile aparece na Visão geral;
+2. O botão de sincronizar vira um anel de progresso e depois confirma "Sincronizado";
 3. Feche a janela no X → o app continua na bandeja; clique no ícone → a janela volta;
-4. Abra o emulador → o card vira "em execução" e dispara o sync direcionado;
-5. Menu da tray → Sair → roda o sync de despedida e encerra.
+4. Abra o emulador → o status na barra lateral e no tile vira "Em execução" e dispara o
+   sync direcionado;
+5. Abra a página do emulador → resolva um conflito ou ajuste as categorias de sync;
+6. Menu da tray → Sair → roda o sync de despedida e encerra.
 
 > **Notificações em dev**: no Windows, notificações nativas podem não aparecer até o app
 > estar instalado (registro do AppUserModelID no WebView2) — é limitação do SO, não do

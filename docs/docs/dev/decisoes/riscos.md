@@ -13,7 +13,7 @@ Riscos identificados na arquitetura do Slot2Sync e como cada um é tratado. A co
 | 6 | Keyring no Linux (Secret Service) | Abstração de token storage (`SecretStore`); fallback possível sem tocar no resto | ✅ estrutural |
 | 7 | Uploads grandes (savestates > 50MB) | Resumable upload acima do limite de upload simples | ✅ |
 | 8 | Offline-first | Falha de rede → pendência persistida; retry no próximo gatilho | ✅ |
-| 9 | Ambiente de dev WSL2 sobre `/mnt/c` | Rodar `tauri dev`/`build` no Windows nativo | ✅ documentado no CLAUDE.md do repo |
+| 9 | Ambiente de dev WSL2 sobre `/mnt/c` | Rodar `tauri dev`/`build` no Windows nativo | ✅ documentado nas instruções de ambiente do repositório |
 | 10 | Saves independentes de dispositivos diferentes sobrescritos no primeiro sync | `device_id` estável (keyring) estampado no Drive; conflito explícito quando a origem é outro dispositivo | ✅ |
 
 ## Detalhamento
@@ -66,9 +66,9 @@ gatilho de sync. A UI exibe a contagem de pendentes no resumo do sync, em vez de
 como erro fatal.
 
 ### 9. Ambiente de dev (WSL2)
-O repositório vive em `/mnt/c` sob WSL, mas o alvo de produção é Windows. Ver as instruções
-de ambiente no `CLAUDE.md` da raiz do repo (WSL/`CARGO_TARGET_DIR`, fix do rollup) — não
-duplicadas aqui para não divergirem de uma fonte para a outra.
+O repositório vive em `/mnt/c` sob WSL, mas o alvo de produção é Windows. As instruções de
+ambiente (WSL/`CARGO_TARGET_DIR`, fix do rollup) ficam documentadas na raiz do repositório do
+app — não duplicadas aqui para não divergirem de uma fonte para a outra.
 
 ### 10. Saves independentes de dispositivos diferentes no primeiro sync
 A resolução por mtime + manifest (risco #1) cobre conflitos a partir do **segundo** sync de um
