@@ -1,0 +1,78 @@
+---
+import Icon from './Icon.astro';
+
+const points = [
+  {
+    icon: 'shield' as const,
+    title: 'Acesso mínimo, por padrão',
+    text: 'O Slot2Sync só enxerga os arquivos que ele próprio cria no provedor escolhido — o resto da sua conta permanece invisível para o app.',
+  },
+  {
+    icon: 'external' as const,
+    title: 'Código aberto, licença GPL-3.0',
+    text: 'Todo o código é público e pode ser auditado por qualquer pessoa. Sem telemetria oculta, sem coleta de dados.',
+  },
+  {
+    icon: 'sync' as const,
+    title: 'Nunca sobrescreve sem perguntar',
+    text: 'Um conflito entre dois dispositivos vira uma decisão sua, com os dois lados visíveis lado a lado — nunca uma escolha automática silenciosa.',
+  },
+  {
+    icon: 'laptop' as const,
+    title: 'Credenciais no seu sistema, não em nossos servidores',
+    text: 'O token de acesso fica no cofre de credenciais do sistema operacional. O Slot2Sync não opera servidor nenhum que guarde seus dados.',
+  },
+];
+---
+
+<section class="trust" id="privacidade">
+  <div class="container">
+    <p class="eyebrow">Confiança</p>
+    <h2>Seus dados continuam seus</h2>
+    <div class="grid grid-2 trust-grid">
+      {
+        points.map((point) => (
+          <div class="trust-item">
+            <span class="trust-icon">
+              <Icon name={point.icon} size={22} />
+            </span>
+            <div>
+              <h3>{point.title}</h3>
+              <p class="muted">{point.text}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .trust {
+    background: var(--color-surface);
+  }
+
+  .trust-grid {
+    margin-top: var(--space-8);
+  }
+
+  .trust-item {
+    display: flex;
+    gap: var(--space-4);
+  }
+
+  .trust-item p {
+    margin: 0;
+  }
+
+  .trust-icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+</style>

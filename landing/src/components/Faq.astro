@@ -1,0 +1,102 @@
+---
+const base = import.meta.env.BASE_URL;
+
+const items = [
+  {
+    q: 'O Slot2Sync é gratuito?',
+    a: 'Sim. É um projeto de código aberto sob a licença GPL-3.0, sem plano pago nem versão limitada.',
+  },
+  {
+    q: 'Preciso ter internet o tempo todo?',
+    a: 'Não. Sem conexão, o que precisava sincronizar vira uma pendência e é resolvido sozinho assim que a rede voltar — nenhum erro, nenhum trava.',
+  },
+  {
+    q: 'Ele pode apagar ou sobrescrever meus saves por engano?',
+    a: 'Não. O Slot2Sync só adiciona e atualiza. Quando dois dispositivos mudam o mesmo arquivo, ele para e pede para você escolher qual versão manter, em vez de decidir sozinho.',
+  },
+  {
+    q: 'Quais emuladores são suportados hoje?',
+    a: 'PPSSPP (PSP) e PCSX2 (PS2), com suporte a mais emuladores planejado — o núcleo de sincronização já foi construído para isso.',
+  },
+  {
+    q: 'Onde meus arquivos ficam guardados?',
+    a: 'No provedor de nuvem que você conectar (Google Drive é o disponível hoje), dentro de uma pasta própria do Slot2Sync — ou numa pasta local/de rede, se preferir não usar nuvem nenhuma.',
+  },
+  {
+    q: 'Funciona no celular?',
+    a: 'O app é feito para desktop (Windows, macOS e Linux). Suporte a mobile está no roteiro do projeto.',
+  },
+];
+---
+
+<section class="faq" id="faq">
+  <div class="container">
+    <p class="eyebrow">Perguntas frequentes</p>
+    <h2>Antes de baixar</h2>
+    <div class="faq-list">
+      {
+        items.map((item) => (
+          <details class="faq-item">
+            <summary>{item.q}</summary>
+            <p class="muted">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+    <p class="faq-more muted">
+      Outra dúvida? Veja a <a href={`${base}docs/faq/`}>FAQ completa na documentação</a> ou
+      <a href="https://github.com/jIDvDIj/slot2sync/issues">abra uma issue</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  .faq-list {
+    margin-top: var(--space-8);
+    display: grid;
+    gap: var(--space-3);
+    max-width: 760px;
+  }
+
+  .faq-item {
+    background: var(--color-surface);
+    border-radius: var(--radius-group);
+    box-shadow: var(--shadow-raised);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    font-size: 1.3rem;
+    line-height: 1;
+    color: var(--color-label-tertiary);
+    transition: transform var(--duration-fast) var(--ease-standard);
+    flex-shrink: 0;
+  }
+
+  .faq-item[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  .faq-item p {
+    margin: var(--space-3) 0 0;
+  }
+
+  .faq-more {
+    margin-top: var(--space-6);
+  }
+</style>

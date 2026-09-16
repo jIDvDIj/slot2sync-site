@@ -1,49 +1,97 @@
 ---
+import AppMockup from './AppMockup.astro';
+import type { ReleaseData } from '../lib/release';
+
+interface Props {
+  release: ReleaseData;
+}
+
+const { release } = Astro.props;
+const p = release.platforms;
 const base = import.meta.env.BASE_URL;
 ---
 
 <header class="hero">
-  <div class="container hero-inner">
-    <img class="hero-icon" src={`${base}favicon.svg`} alt="" width="72" height="72" />
-    <p class="eyebrow">Slot2Sync</p>
-    <h1>Seus jogos, do ponto exato onde você parou — em qualquer máquina.</h1>
-    <p class="lede">
-      O Slot2Sync guarda automaticamente seus <strong>saves, savestates e configurações</strong>
-      de emuladores de retrogames na nuvem. Joga no PC de casa, abre o mesmo jogo no notebook,
-      continua de onde parou. Sem copiar arquivo na mão, sem pendrive.
-    </p>
-    <div class="actions">
-      <a class="btn btn-primary" href="#download">Baixar Slot2Sync</a>
-      <a class="btn btn-ghost" href={`${base}docs/`}>Ver documentação</a>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Slot2Sync</p>
+      <h1>Continue o jogo de onde parou, em qualquer computador.</h1>
+      <p class="lede">
+        Sincroniza automaticamente <strong>saves, savestates e configurações</strong> de
+        emuladores de retrogames entre seus dispositivos, sem copiar arquivo na mão e sem
+        pendrive.
+      </p>
+      <div class="actions">
+        <a
+          class="btn btn-primary btn-large"
+          href="#download"
+          data-platform-cta
+          data-url-windows={p.windows.url}
+          data-label-windows={`Baixar para ${p.windows.label}`}
+          data-url-macArm={p.macArm.url}
+          data-label-macArm={`Baixar para ${p.macArm.label}`}
+          data-url-macIntel={p.macIntel.url}
+          data-label-macIntel={`Baixar para ${p.macIntel.label}`}
+          data-url-linux={p.linux.url}
+          data-label-linux={`Baixar para ${p.linux.label}`}
+        >
+          Baixar Slot2Sync
+        </a>
+        <a class="btn btn-ghost btn-large" href={`${base}docs/`}>Ver documentação</a>
+      </div>
+      <p class="platform-alt" data-platform-alt hidden>
+        Mac com chip Intel? <a href="#">Baixe esta versão</a>.
+      </p>
+      <p class="hero-meta muted">
+        Gratuito e de código aberto (GPL-3.0)
+        {release.version ? <> · versão {release.version}</> : null} · Windows, macOS e
+        Linux
+      </p>
+    </div>
+    <div class="hero-visual">
+      <AppMockup />
     </div>
   </div>
 </header>
 
+<script src={`${import.meta.env.BASE_URL}detect-platform.js`} is:inline defer></script>
+
 <style>
   .hero {
-    padding: var(--space-16) 0 var(--space-12);
+    padding: var(--space-12) 0 var(--space-16);
     background:
-      radial-gradient(circle at 20% 15%, color-mix(in srgb, var(--brand-sky) 16%, transparent), transparent 45%),
-      radial-gradient(circle at 85% 5%, color-mix(in srgb, var(--brand-mint) 14%, transparent), transparent 40%);
+      radial-gradient(
+        circle at 15% 10%,
+        color-mix(in srgb, var(--brand-sky) 14%, transparent),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 90% 0%,
+        color-mix(in srgb, var(--brand-mint) 12%, transparent),
+        transparent 40%
+      );
   }
 
-  .hero-inner {
-    max-width: 720px;
+  .hero-grid {
+    display: grid;
+    gap: var(--space-10);
+    align-items: center;
   }
 
-  .hero-icon {
-    border-radius: 16px;
-    box-shadow: var(--shadow-raised);
-    margin-bottom: var(--space-4);
+  @media (min-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1.05fr 0.95fr;
+    }
   }
 
   h1 {
-    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-size: clamp(2rem, 4.6vw, 2.9rem);
   }
 
   .lede {
     color: var(--color-label-secondary);
     font-size: 1.1rem;
+    max-width: 46ch;
   }
 
   .actions {
@@ -51,5 +99,39 @@ const base = import.meta.env.BASE_URL;
     gap: var(--space-3);
     flex-wrap: wrap;
     margin-top: var(--space-6);
+  }
+
+  .btn-large {
+    height: 52px;
+    padding: 0 var(--space-6);
+    font-size: 1.02rem;
+  }
+
+  .platform-alt {
+    margin: var(--space-3) 0 0;
+    font-size: 0.88rem;
+    color: var(--color-label-secondary);
+  }
+
+  .hero-meta {
+    margin: var(--space-4) 0 0;
+    font-size: 0.85rem;
+  }
+
+  .hero-visual {
+    filter: drop-shadow(0 24px 48px rgb(0 0 0 / 0.12));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-visual {
+      animation: hero-enter 0.6s var(--ease-spring) both;
+    }
+  }
+
+  @keyframes hero-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+    }
   }
 </style>

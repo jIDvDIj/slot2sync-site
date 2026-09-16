@@ -1,84 +1,14 @@
 ---
 import Icon from './Icon.astro';
+import type { ReleaseData } from '../lib/release';
 
-const REPO = 'jIDvDIj/slot2sync';
-const RELEASES_PAGE = `https://github.com/${REPO}/releases/latest`;
-
-interface Asset {
-  url: string;
-  sizeMb: string;
+interface Props {
+  release: ReleaseData;
 }
 
-interface PlatformDownload {
-  os: 'windows' | 'apple' | 'linux';
-  label: string;
-  primary: Asset | null;
-  primaryLabel: string;
-  alternates: { label: string; url: string }[];
-}
-
-/**
- * Filenames carry the version (`Slot2Sync_0.16.0_x64-setup.exe`), so a fixed
- * URL would go stale on every release. Reading the real links at build time —
- * this file only regenerates when the site rebuilds — keeps the buttons on
- * the actual latest release without a runtime API call.
- */
-async function fetchLatestRelease(): Promise<{ version: string; assets: { name: string; url: string; sizeMb: string }[] } | null> {
-  try {
-    const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
-      headers: { Accept: 'application/vnd.github+json' },
-    });
-    if (!response.ok) return null;
-    const data = await response.json();
-    const assets = (data.assets ?? [])
-      .filter((asset: { name: string }) => !asset.name.endsWith('.sig') && asset.name !== 'latest.json')
-      .map((asset: { name: string; browser_download_url: string; size: number }) => ({
-        name: asset.name,
-        url: asset.browser_download_url,
-        sizeMb: (asset.size / 1_000_000).toFixed(1),
-      }));
-    return { version: (data.tag_name as string).replace(/^app-v/, ''), assets };
-  } catch {
-    return null;
-  }
-}
-
-function find(assets: { name: string; url: string; sizeMb: string }[], suffix: string): Asset | null {
-  const asset = assets.find((a) => a.name.endsWith(suffix));
-  return asset ? { url: asset.url, sizeMb: asset.sizeMb } : null;
-}
-
-const release = await fetchLatestRelease();
-const assets = release?.assets ?? [];
-
-// Falls back to the releases page for any button whose asset isn't found —
-// a renamed or missing file never breaks the button, just its precision.
-const platforms: PlatformDownload[] = [
-  {
-    os: 'windows',
-    label: 'Windows',
-    primary: find(assets, '-setup.exe'),
-    primaryLabel: 'Instalador (.exe)',
-    alternates: [{ label: '.msi', url: find(assets, '.msi')?.url ?? RELEASES_PAGE }],
-  },
-  {
-    os: 'apple',
-    label: 'macOS',
-    primary: find(assets, 'aarch64.dmg'),
-    primaryLabel: 'Apple Silicon (.dmg)',
-    alternates: [{ label: 'Intel', url: find(assets, '_x64.dmg')?.url ?? RELEASES_PAGE }],
-  },
-  {
-    os: 'linux',
-    label: 'Linux',
-    primary: find(assets, '.AppImage'),
-    primaryLabel: 'AppImage',
-    alternates: [
-      { label: '.deb', url: find(assets, 'amd64.deb')?.url ?? RELEASES_PAGE },
-      { label: '.rpm', url: find(assets, '.x86_64.rpm')?.url ?? RELEASES_PAGE },
-    ],
-  },
-];
+const { release } = Astro.props;
+const platforms = [release.platforms.windows, release.platforms.macArm, release.platforms.linux];
+const RELEASES_PAGE = 'https://github.com/jIDvDIj/slot2sync/releases/latest';
 ---
 
 <section class="download" id="download">
@@ -86,8 +16,8 @@ const platforms: PlatformDownload[] = [
     <p class="eyebrow">Baixar</p>
     <h2>Escolha seu sistema</h2>
     <p class="muted">
-      {release ? <>Versão mais recente: <strong>{release.version}</strong>.</> : 'Baixe direto do GitHub.'}
-      {' '}Os arquivos vêm do próprio repositório — o botão já aponta para o instalador certo.
+      {release.version ? <>Versão mais recente: <strong>{release.version}</strong>. </> : null}
+      Os botões abaixo baixam o instalador direto do repositório — nenhum redirecionamento, nenhuma conta necessária.
     </p>
 
     <div class="grid grid-3 platforms">
@@ -98,15 +28,11 @@ const platforms: PlatformDownload[] = [
               <Icon name={platform.os} size={30} />
             </span>
             <h3>{platform.label}</h3>
-            <a
-              class="btn btn-primary"
-              href={platform.primary?.url ?? RELEASES_PAGE}
-              aria-label={`Baixar Slot2Sync para ${platform.label}`}
-            >
+            <a class="btn btn-primary" href={platform.url} aria-label={`Baixar Slot2Sync para ${platform.label}`}>
               <Icon name="download" size={18} />
-              {platform.primaryLabel}
+              {platform.formatLabel}
             </a>
-            <p class="platform-meta muted">{platform.primary ? `${platform.primary.sizeMb} MB` : 'Ver na página de releases'}</p>
+            <p class="platform-meta muted">{platform.sizeMb ? `${platform.sizeMb} MB` : 'Ver na página de releases'}</p>
             <p class="platform-alt">
               {platform.alternates.map((alt, i) => (
                 <>

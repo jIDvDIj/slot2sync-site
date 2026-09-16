@@ -11,10 +11,10 @@ const base = import.meta.env.BASE_URL;
       <span>Slot2Sync</span>
     </a>
     <nav class="site-nav">
+      <a href="#como-funciona">Como funciona</a>
       <a href="#features">Recursos</a>
-      <a href="#emulators">Emuladores</a>
-      <a href="#download">Baixar</a>
       <a href={`${base}docs/`}>Documentação</a>
+      <a class="btn btn-ghost btn-small nav-download" href="#download">Baixar</a>
       <a class="icon-link" href="https://github.com/jIDvDIj/slot2sync" aria-label="Código-fonte no GitHub">
         <Icon name="external" size={18} />
       </a>
@@ -58,18 +58,17 @@ const base = import.meta.env.BASE_URL;
   .site-nav {
     display: flex;
     align-items: center;
-    gap: var(--space-6);
-    flex-wrap: wrap;
+    gap: var(--space-5);
   }
 
-  .site-nav a:not(.icon-link) {
+  .site-nav a:not(.icon-link, .nav-download) {
     color: var(--color-label-secondary);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.95rem;
   }
 
-  .site-nav a:not(.icon-link):hover {
+  .site-nav a:not(.icon-link, .nav-download):hover {
     color: var(--color-label);
   }
 
@@ -83,7 +82,7 @@ const base = import.meta.env.BASE_URL;
   }
 
   @media (max-width: 640px) {
-    .site-nav a:not(.icon-link, [href$="/docs/"]) {
+    .site-nav a:not(.icon-link, .nav-download) {
       display: none;
     }
   }
